@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tokyo Girls Hub - Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #ffffff 100%);
+            color: #4b5563;
+        }
+        .page { display: none; }
+        .page.active { display: flex; }
+        .card {
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.1), 0 8px 10px -6px rgba(236, 72, 153, 0.1);
+            width: 100%;
+            max-width: 550px;
+        }
+        .btn {
+            display: inline-block; padding: 0.85rem 1.75rem; border-radius: 0.75rem; font-weight: 600; text-align: center; transition: all 0.2s ease-in-out; cursor: pointer; border: 1px solid transparent;
+        }
+        .btn:disabled { background-color: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
+        .btn-primary { background-color: #EC4899; color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #db2777; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
+        .btn-secondary { background-color: #fce7f3; color: #db2777; border-color: #fbcfe8; }
+        .btn-secondary:hover { background-color: #fbcfe8; }
+        .logo { font-size: 2rem; font-weight: 700; color: #EC4899; text-align: center; margin-bottom: 1.5rem; }
+        .service-card { background-color: #fce7f3; border-radius: 0.75rem; overflow: hidden; text-align: center; color: #be185d; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .service-card img { width: 100%; height: 100px; object-fit: cover; }
+        .service-card p { padding: 0.75rem; }
+        .back-button { position: absolute; top: 1.5rem; left: 1.5rem; background: none; border: none; cursor: pointer; color: #9ca3af; font-weight: 600; font-size: 1.5rem; line-height: 1; }
+        .back-button:hover { color: #EC4899; }
+        .legal-text { line-height: 1.7; }
+
+        /* --- CHAT WIDGET STYLES --- */
+        #chat-bubble { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background-color: #EC4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.2s ease-in-out; z-index: 1000; }
+        #chat-bubble:hover { transform: scale(1.1); }
+        #chat-widget { position: fixed; bottom: 6.5rem; right: 2rem; width: 350px; max-width: 90vw; height: 500px; background-color: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.3s ease-in-out; }
+        #chat-widget.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        #chat-header { background-color: #fbcfe8; padding: 1rem; text-align: center; font-weight: 600; color: #be185d; }
+        #chat-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
+        .chat-message { max-width: 80%; padding: 0.5rem 0.75rem; border-radius: 0.75rem; line-height: 1.4; }
+        .user-message { background-color: #EC4899; color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+        .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0; }
+        #chat-input-area { display: flex; padding: 1rem; border-top: 1px solid #e5e7eb; gap: 0.5rem; }
+        #chat-input { flex-grow: 1; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
+        #chat-input:focus { outline: none; border-color: #EC4899; box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2); }
+        .chat-btn { flex-shrink: 0; width: 40px; height: 40px; border: none; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s; }
+        #mic-btn { background-color: #f3f4f6; color: #4b5563; }
+        #send-btn { background-color: #EC4899; color: white; }
+
+        /* --- VOICE RECORDING OVERLAY --- */
+        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; align-items: center; justify-content: center; z-index: 2000; flex-direction: column; }
+        #voice-visualizer { width: 150px; height: 150px; border-radius: 50%; background-color: #EC4899; display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; }
+        #stop-recording-btn { margin-top: 3rem; background: none; border: 2px solid white; color: white; width: 80px; height: 80px; border-radius: 50%; font-size: 1rem; font-weight: 600; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="app-container" class="w-full">
+        <!-- Page 1: Language Selection -->
+        <div id="page-language" class="page active flex-col items-center">
+            <div class="card">
+                <h1 class="logo">Tokyo Girls Hub</h1>
+                <h2 class="text-xl font-bold text-center mb-4" data-translate-key="select_language_title">Select Your Language</h2>
+                <div class="flex flex-col space-y-4">
+                    <select id="language-select" class="w-full p-3 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-center">
+                        <!-- Options populated by JS -->
+                    </select>
+                    <button id="language-continue-btn" class="btn btn-primary" data-translate-key="continue_btn">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- All other pages remain the same -->
+        <div id="page-first-time" class="page flex-col items-center"><div class="card"><button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button><h1 class="logo" data-translate-key="welcome">Welcome</h1><h2 class="text-2xl font-bold text-center mb-6" data-translate-key="first_time_title">Is this your first time visiting us?</h2><div class="flex justify-around"><button onclick="showPage('page-services')" class="btn btn-primary w-2/5" data-translate-key="yes_btn">Yes</button><button onclick="showPage('page-which-girl')" class="btn btn-secondary w-2/5" data-translate-key="no_btn">No</button></div></div></div>
+        <div id="page-services" class="page flex-col items-center"><div class="card"><button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button><h1 class="logo" data-translate-key="our_services_title">Our Services</h1><p class="text-center mb-4" data-translate-key="our_services_subtitle">We are a legally registered agency. We offer the following services:</p><div class="grid grid-cols-3 gap-4 mb-6"></div><div class="text-center"><button onclick="showPage('page-disclaimer-yes')" class="btn btn-primary" data-translate-key="ok_btn">OK</button></div></div></div>
+        <div id="page-disclaimer-yes" class="page flex-col items-center"><div class="card"><button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button><h1 class="logo text-red-500" data-translate-key="legal_reminder_title">Legal Reminder</h1><div class="text-md space-y-4 mb-6 text-center legal-text" data-translate-key="legal_reminder_text"></div><div class="flex justify-around"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5" data-translate-key="confirm_btn">Confirm</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5" data-translate-key="reject_btn">Reject</button></div></div></div>
+        <div id="page-rejected" class="page flex-col items-center"><div class="card"><h1 class="logo" data-translate-key="thank_you">Thank You</h1><p class="text-center text-lg" data-translate-key="rejection_text">Thanks for your interest. We hope to see you again. Redirecting...</p></div></div>
+        <div id="page-which-girl" class="page flex-col items-center"><div class="card"><button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button><h1 class="logo" data-translate-key="welcome_back">Welcome Back!</h1><h2 class="text-xl font-bold text-center mb-4" data-translate-key="which_girl_title">Which girl did you choose last time?</h2><p class="text-center text-sm mb-6" data-translate-key="which_girl_subtitle">Let us know so we can prepare for your visit.</p><form id="girl-nomination-form"><div class="flex flex-col space-y-4"><input type="text" name="girl_name" data-translate-key="girl_name_placeholder" placeholder="Enter name or 'Not Sure'" class="w-full p-3 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500" required><button type="submit" class="btn btn-primary" data-translate-key="submit_continue_btn">Submit & Continue</button></div></form></div></div>
+        <div id="page-disclaimer-no" class="page flex-col items-center"><div class="card"><button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button><h1 class="logo text-red-500" data-translate-key="legal_reminder_title">Legal Reminder</h1><div class="text-md space-y-4 mb-6 text-center legal-text" data-translate-key="legal_reminder_text"></div><div class="flex justify-around"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5" data-translate-key="confirm_btn">Confirm</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5" data-translate-key="reject_btn">Reject</button></div></div></div>
+        <div id="page-form-success" class="page flex-col items-center"><div class="card text-center"><button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button><h1 class="logo" data-translate-key="thank_you">Thank You!</h1><p class="text-lg mb-4" data-translate-key="form_success_text">Your preference has been noted.</p><p class="mb-6" data-translate-key="form_success_subtitle">Please proceed to the disclaimer.</p><button onclick="showPage('page-disclaimer-no')" class="btn btn-primary" data-translate-key="continue_btn">Continue</button></div></div>
+    </div>
+
+    <!-- CHAT WIDGET HTML -->
+    <div id="chat-bubble"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+    <div id="chat-widget"><div id="chat-header" data-translate-key="chat_header">AI Assistant</div><div id="chat-messages"></div><div id="chat-input-area"><button id="mic-btn" class="chat-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button><input type="text" id="chat-input" data-translate-key="chat_placeholder" placeholder="Ask a question..."><button id="send-btn" class="chat-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button></div></div>
+
+    <!-- VOICE RECORDING OVERLAY HTML -->
+    <div id="voice-overlay"><div id="voice-visualizer"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></div><button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button></div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const bookingUrl = 'https://tokyogirlshub.com/en/booking';
+        const n8nWebhookUrl = 'https://tokyogirlshub.app.n8n.cloud/webhook/d01e21eb-14c0-41bf-8c7f-cee5a5e3371d'; 
+        let currentLanguage = 'en';
+        let pageHistory = [];
+        let chatHistory = [];
+
+        // --- TRANSLATION DATA ---
+        const translations = {
+            'en': { stop_btn: "Stop", /* ... other keys */ select_language_title: "Select Your Language", search_placeholder: "Search for a language...", welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We're a legally registered agency offering these services:", ok_btn: "I Understand", legal_reminder_title: "⚖️ Legal Reminder", legal_reminder_text: "In Japan, paying for intercourse is strictly illegal. 🚫<br><br>We fully comply with the law, so please do not request this service.<br><br>Payment is for our companion's time and delightful company only. Thank you for your understanding! 😊", confirm_btn: "I Agree", reject_btn: "I Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest. Hope to see you again soon. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Which companion did you see last time?", which_girl_subtitle: "Letting us know helps us prepare for your visit.", girl_name_placeholder: "Her name, or 'Not Sure'", submit_continue_btn: "Submit & Continue", confirm_booking_btn: "Confirm & Proceed to Booking", form_success_text: "Thank you, we've noted your preference.", form_success_subtitle: "Please continue to the legal reminder.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Massage", "Cuddling"], back_btn: "‹", chat_header: "AI Assistant", chat_placeholder: "Ask a question..." },
+            'ja': { stop_btn: "停止", /* ... other keys */ select_language_title: "言語を選択してください", search_placeholder: "言語を検索...", welcome: "ようこそ", first_time_title: "初めてのご利用ですか？", yes_btn: "はい", no_btn: "いいえ", our_services_title: "サービス内容", our_services_subtitle: "当店は合法的に認可された店舗です。以下のサービスをご提供しております。", ok_btn: "了解しました", legal_reminder_title: "⚖️ 重要なお知らせ", legal_reminder_text: "日本では、対価を伴う性交渉は法律で固く禁じられています。🚫<br><br>当店は法律を遵守しておりますので、そのようなサービスのご要求はご遠慮ください。<br><br>料金はあくまで、コンパニオンの時間と楽しい会話に対してのものです。ご理解ご協力をお願いいたします。😊", confirm_btn: "同意します", reject_btn: "同意しません", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、ありがとうございます。またのご利用をお待ちしております。リダイレクト中...", welcome_back: "おかえりなさいませ！", which_girl_title: "前回ご指名のコンパニオンは？", which_girl_subtitle: "お気に入りの子を教えていただけると、スムーズにご案内できます。", girl_name_placeholder: "コンパニオン名、または「覚えていない」", submit_continue_btn: "送信して続ける", confirm_booking_btn: "確認して予約に進む", form_success_text: "ありがとうございます。ご希望を承りました。", form_success_subtitle: "続いて、注意事項の確認をお願いします。", continue_btn: "続ける", services: ["キス", "ハンドジョブ", "ボール舐め", "フェラチオ", "ボディタッチ", "全身舐め", "シックスナイン", "マッサージ", "添い寝"], back_btn: "‹", chat_header: "AIアシスタント", chat_placeholder: "質問を入力..." },
+            'zh': { stop_btn: "停止", /* ... other keys */ select_language_title: "请选择您的语言", search_placeholder: "搜索语言...", welcome: "欢迎光临", first_time_title: "是第一次来吗？", yes_btn: "是", no_btn: "不是", our_services_title: "服务项目", our_services_subtitle: "我们是合法注册的店铺，为您提供以下服务项目：", ok_btn: "我明白了", legal_reminder_title: "⚖️ 法律提醒", legal_reminder_text: "在日本，付费性交易是严格违法的。🚫<br><br>我们严格遵守法律，请不要提出此类服务要求。<br><br>您的费用仅用于女伴的宝贵时间与愉快陪伴。感谢您的理解与合作！😊", confirm_btn: "我同意", reject_btn: "我拒绝", thank_you: "谢谢您", rejection_text: "感谢您的光临，期待下次能为您服务。页面跳转中...", welcome_back: "欢迎回来！", which_girl_title: "上次您选择的女伴是哪位？", which_girl_subtitle: "告诉我们能帮助我们更好地为您准备。", girl_name_placeholder: "她的名字，或“不确定”", submit_continue_btn: "提交并继续", confirm_booking_btn: "确认并继续预订", form_success_text: "谢谢，我们已记录您的偏好。", form_success_subtitle: "请继续阅读法律提醒。", continue_btn: "继续", services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔全身", "69", "按摩", "拥抱"], back_btn: "‹", chat_header: "AI 助手", chat_placeholder: "输入您的问题..." },
+            'ko': { stop_btn: "중지", /* ... other keys */ select_language_title: "언어를 선택하세요", search_placeholder: "언어 검색...", welcome: "어서 오세요", first_time_title: "처음 방문이신가요?", yes_btn: "네", no_btn: "아니요", our_services_title: "서비스 안내", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음과 같은 서비스를 제공합니다:", ok_btn: "이해했습니다", legal_reminder_title: "⚖️ 법적 고지", legal_reminder_text: "일본에서는 금전을 대가로 한 성관계는 엄격히 금지되어 있습니다. 🚫<br><br>저희는 법을 준수하므로, 해당 서비스 요청은 삼가 주시기 바랍니다.<br><br>지불하시는 비용은 오직 컴패니언의 시간과 즐거운 대화에 대한 것입니다. 이해와 협조에 감사드립니다. 😊", confirm_btn: "동의합니다", reject_btn: "거부합니다", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다시 뵙기를 바랍니다. 리디렉션 중...", welcome_back: "다시 오신 것을 환영합니다!", which_girl_title: "지난번에 어떤 컴패니언과 함께하셨나요?", which_girl_subtitle: "더 나은 준비를 위해 알려주시면 감사하겠습니다.", girl_name_placeholder: "이름 또는 '잘 모르겠어요'", submit_continue_btn: "제출하고 계속하기", confirm_booking_btn: "확인하고 예약 진행", form_success_text: "감사합니다, 선호 사항이 기록되었습니다.", form_success_subtitle: "법적 고지 사항으로 진행해 주세요.", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "마사지", "포옹"], back_btn: "‹", chat_header: "AI 어시스턴트", chat_placeholder: "질문을 입력하세요..." },
+            'es': { stop_btn: "Parar", /* ... other keys */ select_language_title: "Seleccione su idioma", search_placeholder: "Buscar un idioma...", welcome: "Bienvenido", first_time_title: "¿Es su primera vez con nosotros?", yes_btn: "Sí", no_btn: "No", our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada y ofrecemos los siguientes servicios:", ok_btn: "Entendido", legal_reminder_title: "⚖️ Recordatorio Legal", legal_reminder_text: "En Japón, pagar por relaciones sexuales está estrictamente prohibido por ley. 🚫<br><br>Cumplimos plenamente con la ley, por favor no solicite este servicio.<br><br>El pago es únicamente por el tiempo y la encantadora compañía de nuestras acompañantes. ¡Gracias por su comprensión! 😊", confirm_btn: "Acepto", reject_btn: "Rechazo", thank_you: "Gracias", rejection_text: "Agradecemos su interés. Esperamos verle de nuevo. Redirigiendo...", welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Qué acompañante vio la última vez?", which_girl_subtitle: "Saberlo nos ayuda a preparar su visita.", girl_name_placeholder: "Su nombre, o 'No estoy seguro'", submit_continue_btn: "Enviar y Continuar", confirm_booking_btn: "Confirmar y Proceder a la Reserva", form_success_text: "Gracias, hemos anotado su preferencia.", form_success_subtitle: "Por favor, continúe con el aviso legal.", continue_btn: "Continuar", services: ["Besos", "Masturbación", "Lamer testículos", "Sexo oral", "Tocar", "Lamer el cuerpo", "69", "Masaje", "Abrazos"], back_btn: "‹", chat_header: "Asistente de IA", chat_placeholder: "Haga una pregunta..." },
+            'zh-tw': { stop_btn: "停止", /* ... other keys */ select_language_title: "請選擇您的語言", search_placeholder: "搜尋語言...", welcome: "歡迎光臨", first_time_title: "是第一次來嗎？", yes_btn: "是", no_btn: "不是", our_services_title: "服務項目", our_services_subtitle: "我們是合法註冊的店家，為您提供以下服務項目：", ok_btn: "我明白了", legal_reminder_title: "⚖️ 法律提醒", legal_reminder_text: "在日本，付費性交易是嚴格禁止的違法行為。🚫<br><br>我們嚴格遵守法律，請不要提出此類服務要求。<br><br>您的費用僅用於女伴的寶貴時間與愉快陪伴。感謝您的理解與合作！😊", confirm_btn: "我同意", reject_btn: "我拒絕", thank_you: "謝謝您", rejection_text: "感謝您的光臨，期待下次能為您服務。頁面跳轉中...", welcome_back: "歡迎回來！", which_girl_title: "上次您選擇的女伴是哪位？", which_girl_subtitle: "告訴我們能幫助我們更好地為您準備。", girl_name_placeholder: "她的名字，或「不確定」", submit_continue_btn: "提交並繼續", confirm_booking_btn: "確認並繼續預訂", form_success_text: "謝謝，我們已記錄您的偏好。", form_success_subtitle: "請繼續閱讀法律提醒。", continue_btn: "繼續", services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔全身", "69", "按摩", "擁抱"], back_btn: "‹", chat_header: "AI 助理", chat_placeholder: "輸入您的問題..." }
+        };
+        
+        const languageOptions = [ { code: 'en', name: "English" }, { code: 'ja', name: "日本語 (Japanese)" }, { code: 'zh', name: "中文 (简体)" }, { code: 'ko', name: "한국어 (Korean)" }, { code: 'es', name: "Español (Spanish)" }, { code: 'zh-tw', name: "中文 (繁體 - 廣東話/台灣話)" } ];
+
+        // --- CORE FUNCTIONS (Updated Language Selection) ---
+        function updateText() { const langPack = translations[currentLanguage] || translations['en']; document.querySelectorAll('[data-translate-key]').forEach(el => { const key = el.getAttribute('data-translate-key'); if (langPack[key]) { if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = langPack[key]; } else { el.innerHTML = langPack[key]; } } }); populateServices(); }
+        
+        function populateLanguages() {
+            const select = document.getElementById('language-select');
+            select.innerHTML = '';
+            languageOptions.forEach(lang => {
+                const option = document.createElement('option');
+                option.value = lang.code;
+                option.textContent = lang.name;
+                select.appendChild(option);
+            });
+        }
+        
+        document.getElementById('language-continue-btn').addEventListener('click', () => {
+            const select = document.getElementById('language-select');
+            currentLanguage = select.value;
+            showPage('page-first-time');
+        });
+
+        function populateServices() { const grid = document.querySelector('#page-services .grid'); const services = translations[currentLanguage].services || translations['en'].services; grid.innerHTML = ''; services.forEach(service => { const card = document.createElement('div'); card.className = 'service-card'; card.innerHTML = `<img src="https://placehold.co/200x200/fbcfe8/be185d?text=${service.charAt(0)}" alt="${service}"><p>${service}</p>`; grid.appendChild(card); }); }
+        function showPage(pageId, isGoingBack = false) { const currentPage = document.querySelector('.page.active'); if (currentPage && !isGoingBack) { pageHistory.push(currentPage.id); } document.querySelectorAll('.page').forEach(page => page.classList.remove('active')); const targetPage = document.getElementById(pageId); if (targetPage) { targetPage.classList.add('active'); updateText(); } }
+        function goBack() { if (pageHistory.length > 0) { const prevPageId = pageHistory.pop(); showPage(prevPageId, true); } }
+        function redirectToBooking() { window.location.href = bookingUrl; }
+        function handleRejection() { showPage('page-rejected'); setTimeout(() => { pageHistory = []; showPage('page-language'); }, 10000); }
+        document.getElementById('girl-nomination-form').addEventListener("submit", async function(event) { event.preventDefault(); const girlName = new FormData(event.target).get('girl_name'); const payload = { type: "nomination", payload: { girl_name: girlName, submitted_at: new Date().toISOString() } }; try { const response = await fetch(n8nWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); if (response.ok) { showPage('page-form-success'); } else { console.error('Webhook submission failed, but proceeding.'); showPage('page-disclaimer-no'); } } catch (error) { console.error('Error submitting to webhook:', error); showPage('page-disclaimer-no'); } });
+
+        // --- CHAT WIDGET LOGIC ---
+        const chatWidget = document.getElementById('chat-widget');
+        const chatBubble = document.getElementById('chat-bubble');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const micBtn = document.getElementById('mic-btn');
+        chatBubble.addEventListener('click', () => chatWidget.classList.toggle('active'));
+        function addChatMessage(message, sender) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; chatMessages.appendChild(msgDiv); chatMessages.scrollTop = chatMessages.scrollHeight; }
+        async function handleSendMessage() { const message = chatInput.value.trim(); if (!message) return; addChatMessage(message, 'user'); chatHistory.push({ role: 'user', content: message }); chatInput.value = ''; const payload = { type: "chat", payload: { message: message, history: chatHistory, language: currentLanguage } }; try { const response = await fetch(n8nWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await response.json(); const aiResponse = data.response || "Sorry, I couldn't process that."; addChatMessage(aiResponse, 'ai'); chatHistory.push({ role: 'ai', content: aiResponse }); speakText(aiResponse); } catch (error) { console.error("Chat error:", error); addChatMessage("Sorry, an error occurred.", 'ai'); } }
+        sendBtn.addEventListener('click', handleSendMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSendMessage(); });
+
+        // --- VOICE RECORDING & TEXT-TO-SPEECH ---
+        const voiceOverlay = document.getElementById('voice-overlay');
+        const stopRecordingBtn = document.getElementById('stop-recording-btn');
+        const visualizer = document.getElementById('voice-visualizer');
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioContext, analyser, dataArray, source, rafId;
+
+        function speakText(text) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); window.speechSynthesis.speak(utterance); }
+        
+        async function sendAudioToWebhook(audioBase64) {
+            const payload = { type: "audio_chat", payload: { audio_base64: audioBase64, language: currentLanguage, history: chatHistory } };
+            try {
+                const response = await fetch(n8nWebhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await response.json();
+                const transcribedText = data.transcribed_text || "Couldn't hear that.";
+                const aiResponse = data.response || "Sorry, I couldn't process that.";
+                
+                addChatMessage(transcribedText, 'user');
+                chatHistory.push({ role: 'user', content: transcribedText });
+                
+                addChatMessage(aiResponse, 'ai');
+                chatHistory.push({ role: 'ai', content: aiResponse });
+                
+                speakText(aiResponse);
+            } catch (error) {
+                console.error("Audio chat error:", error);
+                addChatMessage("Sorry, an error occurred with my ears.", 'ai');
+            }
+        }
+
+        function visualize(stream) {
+            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            source = audioContext.createMediaStreamSource(stream);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            source.connect(analyser);
+            
+            const draw = () => {
+                rafId = requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+                let sum = dataArray.reduce((a, b) => a + b, 0);
+                let avg = sum / bufferLength || 0;
+                let scale = 1 + (avg / 128);
+                visualizer.style.transform = `scale(${scale})`;
+            };
+            draw();
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                visualize(stream);
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                voiceOverlay.style.display = 'flex';
+                
+                mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks);
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => {
+                        const base64String = reader.result.split(',')[1];
+                        sendAudioToWebhook(base64String);
+                    };
+                    audioChunks = [];
+                    stream.getTracks().forEach(track => track.stop());
+                    cancelAnimationFrame(rafId);
+                    visualizer.style.transform = 'scale(1)';
+                });
+            } catch (err) {
+                console.error("Error accessing microphone:", err);
+                alert("Microphone access is required for voice chat. Please allow access and try again.");
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+            }
+            voiceOverlay.style.display = 'none';
+        }
+
+        micBtn.addEventListener('click', startRecording);
+        stopRecordingBtn.addEventListener('click', stopRecording);
+        
+        // --- INITIALIZE APP ---
+        document.addEventListener('DOMContentLoaded', () => {
+            populateLanguages();
+            showPage('page-language');
+        });
+    </script>
+
+</body>
+</html>
