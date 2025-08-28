@@ -537,14 +537,14 @@
 
     // Use x-www-form-urlencoded to avoid CORS preflight
     async function postSimple(payload) {
-      const body = new URLSearchParams({ json: JSON.stringify(payload) });
       const resp = await fetch(n8nWebhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
       return readResponseSafely(resp);
     }
+
 
     // --- FORM SUBMIT: Girl nomination ---
     document.getElementById('girl-nomination-form').addEventListener("submit", async function(event) {
