@@ -629,22 +629,30 @@
     }
 
     async function sendAudioToWebhook(audioBlob) {
-      // Prefer multipart/form-data for large audio to avoid base64 bloat
+      // Build multipart/form-data with flat fields (no nested "json" string!)
       const fd = new FormData();
-      fd.append('file', blob);  // audio file (Blob)
-      fd.append('session_id', sessionId); // plain string
+    
+      // attach the audio file with a filename (helps n8n detect it as binary)
+      fd.append('file', audioBlob, 'voice.webm');
+    
+      // flat metadata fields
+      fd.append('session_id', getSessionId());
       fd.append('type', 'audio_chat');
       fd.append('language', currentLanguage);
-      fd.append('history', JSON.stringify(chatHistory)); // still a string, but n8n can parse
-
-
+    
+      // history is an array, send as JSON-string; you'll parse this in n8n
+      fd.append('history', JSON.stringify(chatHistory));
+    
       try {
         const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
         const data = await readResponseSafely(resp);
+    
         const transcribedText = (data && data.transcribed_text) ? data.transcribed_text : "Couldn't hear that.";
         const aiResponse = (data && data.response) ? data.response : "Thanks! Noted.";
+    
         addChatMessage(transcribedText, 'user');
         chatHistory.push({ role: 'user', content: transcribedText });
+    
         addChatMessage(aiResponse, 'ai');
         chatHistory.push({ role: 'ai', content: aiResponse });
         speakText(aiResponse);
@@ -653,6 +661,7 @@
         addChatMessage("Sorry, an error occurred with my ears.", 'ai');
       }
     }
+
 
     function visualize(stream) {
       if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
