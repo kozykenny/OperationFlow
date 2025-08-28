@@ -99,6 +99,36 @@
     <div id="voice-overlay"><div id="voice-visualizer"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></div><button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button></div>
 
     <script>
+
+            // --- SESSION ID ---
+    const SESSION_KEY = 'tgh_session_id';
+    
+    function generateSessionId() {
+      // RFC4122-ish v4 UUID
+      const buf = new Uint8Array(16);
+      crypto.getRandomValues(buf);
+      buf[6] = (buf[6] & 0x0f) | 0x40;
+      buf[8] = (buf[8] & 0x3f) | 0x80;
+      const hex = [...buf].map(b => b.toString(16).padStart(2, '0')).join('');
+      return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+    }
+    
+    function getSessionId() {
+      let sid = sessionStorage.getItem(SESSION_KEY);
+      if (!sid) {
+        sid = generateSessionId();
+        sessionStorage.setItem(SESSION_KEY, sid);
+      }
+      return sid;
+    }
+    
+    // Optional: force a brand-new session when a staff member clicks “Start”
+    // Call resetSession() when you want to begin a fresh customer flow.
+    function resetSession() {
+      sessionStorage.removeItem(SESSION_KEY);
+      return getSessionId();
+    }
+
         // --- CONFIGURATION ---
         const bookingUrl = 'https://tokyogirlshub.com/en/booking';
         const n8nWebhookUrl = 'https://tokyogirlshub.app.n8n.cloud/webhook/d01e21eb-14c0-41bf-8c7f-cee5a5e3371d'; 
