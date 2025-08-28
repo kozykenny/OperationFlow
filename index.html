@@ -631,11 +631,12 @@
     async function sendAudioToWebhook(audioBlob) {
       // Prefer multipart/form-data for large audio to avoid base64 bloat
       const fd = new FormData();
-      fd.append('json', JSON.stringify({
-        session_id: getSessionId(),
-        type: 'audio_chat',
-        payload: { language: currentLanguage, history: chatHistory }
-      }));
+      fd.append('file', blob);  // still the audio
+      fd.append('session_id', getSessionId());
+      fd.append('type', 'audio_chat');
+      fd.append('language', currentLanguage);
+      fd.append('history', JSON.stringify(chatHistory));
+
       fd.append('file', audioBlob, 'voice.webm');
 
       try {
