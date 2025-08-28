@@ -631,13 +631,12 @@
     async function sendAudioToWebhook(audioBlob) {
       // Prefer multipart/form-data for large audio to avoid base64 bloat
       const fd = new FormData();
-      fd.append('file', blob);  // still the audio
-      fd.append('session_id', getSessionId());
+      fd.append('file', blob);  // audio file (Blob)
+      fd.append('session_id', sessionId); // plain string
       fd.append('type', 'audio_chat');
       fd.append('language', currentLanguage);
-      fd.append('history', JSON.stringify(chatHistory));
+      fd.append('history', JSON.stringify(chatHistory)); // still a string, but n8n can parse
 
-      fd.append('file', audioBlob, 'voice.webm');
 
       try {
         const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
