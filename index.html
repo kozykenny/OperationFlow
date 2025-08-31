@@ -13,6 +13,9 @@
             --pink-200: #fbcfe8;
             --rose-700: #be185d;
         }
+        html, body {
+            height: 100%;
+        }
         body {
             font-family: 'Inter', sans-serif;
             background: 
@@ -20,7 +23,10 @@
                 radial-gradient(70rem 70rem at 110% 10%, rgba(236,72,153,.12), transparent 40%),
                 linear-gradient(135deg, #fff 0%, #fff 100%);
             color: #374151;
-            min-height: 100vh;
+            margin: 0;
+            display: flex; /* Centering fix */
+            align-items: center; /* Centering fix */
+            justify-content: center; /* Centering fix */
         }
         .page-content { display: none; }
         .page-content.active { display: flex; }
@@ -106,9 +112,9 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div id="app-container" class="w-full flex flex-col items-center">
+    <div id="app-container" class="w-full flex flex-col items-center p-4">
         <div id="page-language" class="page-content active w-full"><div class="card"><h1 class="logo">Tokyo Girls Hub</h1><h2 class="page-title" data-translate-key="select_language_title">Select Your Language</h2><div class="flex flex-col space-y-4 max-w-md mx-auto">
             <div id="custom-language-select" class="custom-select-container">
                 <button id="language-select-button" type="button" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-center text-lg flex justify-between items-center">
@@ -205,7 +211,6 @@
         const bigMicBtn = document.getElementById('big-mic');
         const voiceOverlay = document.getElementById('voice-overlay');
         const stopRecordingBtn = document.getElementById('stop-recording-btn');
-        const visualizer = document.getElementById('voice-visualizer');
         const conversationPanel = document.getElementById('conversation-panel');
         let mediaRecorder, audioChunks = [], audioContext, analyser, dataArray, source, rafId, isRecording = false;
 
@@ -253,6 +258,7 @@
 
         function visualize(stream) {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const visualizer = document.getElementById('voice-visualizer');
             source = audioContext.createMediaStreamSource(stream);
             analyser = audioContext.createAnalyser();
             analyser.fftSize = 256;
@@ -285,7 +291,7 @@
                     sendAudioToWebhook(audioBlob);
                     stream.getTracks().forEach(track => track.stop());
                     if (rafId) cancelAnimationFrame(rafId);
-                    visualizer.style.transform = 'scale(1)';
+                    document.getElementById('voice-visualizer').style.transform = 'scale(1)';
                 });
             } catch (err) { alert("Microphone access is required. Please allow access and try again."); }
         }
@@ -325,11 +331,9 @@
         }
         document.getElementById('language-continue-btn').addEventListener('click', () => { 
             resetSession();
-            // The language is already set when an option is clicked.
-            // We just need to ensure a default is set if nothing was clicked.
             const selectedName = document.getElementById('selected-language-name').textContent;
             if (selectedName === 'Select Language') {
-                currentLanguage = 'en'; // Default to English
+                currentLanguage = 'en';
             }
             updateText(); 
             showPage('page-first-time'); 
