@@ -5,134 +5,243 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tokyo Girls Hub - Welcome</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
+    :root{
+      --pink:#EC4899;
+      --pink-100:#fce7f3;
+      --pink-200:#fbcfe8;
+      --rose-700:#be185d;
+    }
+    *{box-sizing:border-box}
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 50%, #ffffff 100%);
-      color: #4b5563;
+      background:
+        radial-gradient(60rem 60rem at 10% -10%, rgba(236,72,153,.12), transparent 40%),
+        radial-gradient(70rem 70rem at 110% 10%, rgba(236,72,153,.12), transparent 40%),
+        linear-gradient(135deg, #fff 0%, #fff 100%);
+      color: #374151;
+      min-height:100vh;
     }
     .page { display: none; }
     .page.active { display: flex; }
+
+    /* Glass card */
     .card {
       position: relative;
-      background-color: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(236, 72, 153, 0.2);
-      border-radius: 1.5rem;
-      padding: 2.5rem;
-      box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.1), 0 8px 10px -6px rgba(236, 72, 153, 0.1);
+      background-color: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(236, 72, 153, 0.18);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      box-shadow: 0 20px 40px -20px rgba(236, 72, 153, 0.25), 0 10px 24px -18px rgba(0,0,0,.1);
       width: 100%;
-      max-width: 550px;
+      max-width: 720px;
+      transition: transform .2s ease, box-shadow .2s ease;
     }
+    .card:hover{ transform: translateY(-2px); box-shadow: 0 28px 48px -24px rgba(236,72,153,.3), 0 14px 28px -22px rgba(0,0,0,.12); }
+
     .btn {
-      display: inline-block; padding: 0.85rem 1.75rem; border-radius: 0.75rem; font-weight: 600; text-align: center; transition: all 0.2s ease-in-out; cursor: pointer; border: 1px solid transparent;
+      display: inline-flex; align-items:center; justify-content:center;
+      gap:.5rem;
+      padding: 0.9rem 1.2rem; border-radius: 0.9rem; font-weight: 600;
+      transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease;
+      cursor: pointer; border: 1px solid transparent;
     }
     .btn:disabled { background-color: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
-    .btn-primary { background-color: #EC4899; color: white; }
-    .btn-primary:hover:not(:disabled) { background-color: #db2777; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
-    .btn-secondary { background-color: #fce7f3; color: #db2777; border-color: #fbcfe8; }
-    .btn-secondary:hover { background-color: #fbcfe8; }
-    .logo { font-size: 2rem; font-weight: 700; color: #EC4899; text-align: center; margin-bottom: 1.5rem; }
-    .service-card { background-color: #fce7f3; border-radius: 0.75rem; overflow: hidden; text-align: center; color: #be185d; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .btn-primary { background-color: var(--pink); color: white; }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(236,72,153,.35); }
+    .btn-secondary { background-color: #fff; color: var(--rose-700); border-color: var(--pink-200); }
+    .btn-secondary:hover { background-color: var(--pink-100); }
+
+    .logo { font-family:"Playfair Display", serif; font-size: 2.1rem; font-weight: 700; color: var(--pink); text-align: center; margin-bottom: 0.25rem; letter-spacing:.2px; }
+    .tagline { text-align:center; color:#6b7280; margin-bottom:1.25rem; }
+
+    .grid-soft { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .9rem; }
+    .service-card { background:linear-gradient(180deg,#fff,rgba(255,255,255,.9)); border:1px solid rgba(236,72,153,.2); border-radius: 0.9rem; overflow: hidden; text-align: center; color: var(--rose-700); font-weight: 500; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
     .service-card img { width: 100%; height: 100px; object-fit: cover; }
     .service-card p { padding: 0.75rem; }
-    .back-button { position: absolute; top: 1.5rem; left: 1.5rem; background: none; border: none; cursor: pointer; color: #9ca3af; font-weight: 600; font-size: 1.5rem; line-height: 1; }
-    .back-button:hover { color: #EC4899; }
+
+    .back-button { position: absolute; top: 1rem; left: 1rem; background: white; border: 1px solid #f3f4f6; cursor: pointer; color: #6b7280; font-weight: 700; font-size: 1.2rem; line-height: 1; width:36px; height:36px; border-radius:.75rem; display:flex;align-items:center;justify-content:center; }
+    .back-button:hover { color: var(--pink); border-color: var(--pink-200); }
+
     .legal-text { line-height: 1.7; }
 
-    /* --- CHAT WIDGET STYLES --- */
-    #chat-bubble { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; background-color: #EC4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.2s ease-in-out; z-index: 1000; }
-    #chat-bubble:hover { transform: scale(1.1); }
-    #chat-widget { position: fixed; bottom: 6.5rem; right: 2rem; width: 350px; max-width: 90vw; height: 500px; background-color: white; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.3s ease-in-out; }
-    #chat-widget.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
-    #chat-header { background-color: #fbcfe8; padding: 1rem; text-align: center; font-weight: 600; color: #be185d; }
-    #chat-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
-    .chat-message { max-width: 80%; padding: 0.5rem 0.75rem; border-radius: 0.75rem; line-height: 1.4; }
-    .user-message { background-color: #EC4899; color: white; align-self: flex-end; border-bottom-right-radius: 0; }
-    .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0; }
-    #chat-input-area { display: flex; padding: 1rem; border-top: 1px solid #e5e7eb; gap: 0.5rem; }
-    #chat-input { flex-grow: 1; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.5rem 0.75rem; }
-    #chat-input:focus { outline: none; border-color: #EC4899; box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2); }
-    .chat-btn { flex-shrink: 0; width: 40px; height: 40px; border: none; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background-color 0.2s; }
-    #mic-btn { background-color: #f3f4f6; color: #4b5563; }
-    #send-btn { background-color: #EC4899; color: white; }
+    /* Conversation panel */
+    #conversation-panel{
+      position: fixed; right: 2rem; bottom: 2rem; width: 380px; max-width: 92vw; height: 560px;
+      background: #fff; border:1px solid rgba(236,72,153,.25); border-radius:1.25rem;
+      box-shadow: 0 24px 48px -24px rgba(0,0,0,.2);
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    #panel-header{
+      background: linear-gradient(90deg, var(--pink-200), #ffe4ef);
+      padding: .9rem 1rem; font-weight:700; color: var(--rose-700); display:flex; align-items:center; justify-content:space-between;
+    }
+    #chat-messages{ flex:1; padding: 1rem; overflow-y:auto; display:flex; flex-direction:column; gap:.6rem; background: linear-gradient(180deg, #fff, #fff9fb 60%, #fff); }
+    .chat-message { max-width: 84%; padding: 0.55rem 0.75rem; border-radius: 0.9rem; line-height: 1.4; font-size:.98rem; }
+    .user-message { background-color: var(--pink); color: white; align-self: flex-end; border-bottom-right-radius: 0.3rem; }
+    .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
 
-    /* --- VOICE RECORDING OVERLAY --- */
-    #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: none; align-items: center; justify-content: center; z-index: 2000; flex-direction: column; }
-    #voice-visualizer { width: 150px; height: 150px; border-radius: 50%; background-color: #EC4899; display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; }
-    #stop-recording-btn { margin-top: 3rem; background: none; border: 2px solid white; color: white; width: 80px; height: 80px; border-radius: 50%; font-size: 1rem; font-weight: 600; }
+    /* Typing indicator */
+    .typing {
+      align-self: flex-start;
+      background-color: #f3f4f6;
+      color: #374151;
+      border-bottom-left-radius: 0.3rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.9rem;
+      max-width: 84%;
+    }
+    .typing-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #9ca3af; opacity: 0.6;
+      animation: dotPulse 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* Big circular mic button */
+    #big-mic {
+      position: fixed; left: 2rem; bottom: 2rem;
+      width: 88px; height: 88px; border-radius: 9999px;
+      background: var(--pink); color:#fff; border:none;
+      display:flex; align-items:center; justify-content:center; cursor:pointer;
+      box-shadow: 0 16px 36px -18px rgba(236,72,153,.6), 0 10px 16px -14px rgba(0,0,0,.2);
+      transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
+      z-index: 50;
+    }
+    #big-mic:hover{ transform: translateY(-1px); box-shadow: 0 20px 42px -20px rgba(236,72,153,.7), 0 12px 18px -14px rgba(0,0,0,.22); }
+    #big-mic.recording{ background:#f43f5e; }
+    .mic-ring {
+      position:absolute; inset:-8px; border-radius:9999px; border:2px solid rgba(236,72,153,.35);
+      animation: ringPulse 1.6s ease-out infinite;
+    }
+    .mic-ring.delay { animation-delay: .35s; opacity:.6; }
+    @keyframes ringPulse {
+      0% { transform: scale(.9); opacity:.9; }
+      100% { transform: scale(1.15); opacity:0; }
+    }
+
+    /* Voice overlay (visualizer) */
+    #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 60; flex-direction: column; }
+    #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink);
+      display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(236,72,153,.45); }
+    #stop-recording-btn { margin-top: 1.2rem; background: #fff; color: var(--pink); border: 2px solid var(--pink-200);
+      width: 110px; height: 48px; border-radius: 9999px; font-size: .95rem; font-weight: 700; }
+
+    /* Language select styling */
+    select { appearance:none; background-image: linear-gradient(45deg, transparent 50%, var(--pink) 50%), linear-gradient(135deg, var(--pink) 50%, transparent 50%); background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px); background-size: 5px 5px, 5px 5px; background-repeat:no-repeat; }
+
+    /* Layout helpers */
+    .hero {
+      max-width: 980px; margin: 2rem auto 1.25rem;
+      text-align:center;
+    }
+    .hero h1 {
+      font-family:"Playfair Display", serif;
+      font-size: clamp(2rem, 2.6vw + 1rem, 3.2rem);
+      color:#111827;
+      line-height:1.1;
+      letter-spacing:.2px;
+    }
+    .hero p { color:#6b7280; margin-top:.6rem; }
+
+    @media (max-width: 1024px){
+      #conversation-panel{ right: 1rem; bottom: 1rem; width: min(92vw, 420px); height: 520px; }
+      #big-mic{ left: 1rem; bottom: 1rem; }
+    }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen p-4">
 
-  <div id="app-container" class="w-full">
+  <!-- HERO / LANDING -->
+  <section class="hero">
+    <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold" style="background:#fff; border:1px solid rgba(236,72,153,.25); color:#be185d;">
+      <span>✨ New</span> <span>Voice Assistant now available</span>
+    </div>
+    <h1 class="mt-3">Tokyo Girls Hub</h1>
+    <p>Friendly, multilingual concierge. Ask anything hands-free — we’ll speak your language and show the transcript.</p>
+  </section>
+
+  <div id="app-container" class="w-full flex flex-col items-center gap-6">
     <!-- Page 1: Language Selection -->
-    <div id="page-language" class="page active flex-col items-center">
-      <div class="card">
-        <h1 class="logo">Tokyo Girls Hub</h1>
-        <h2 class="text-xl font-bold text-center mb-4" data-translate-key="select_language_title">Select Your Language</h2>
-        <div class="flex flex-col space-y-4">
-          <select id="language-select" class="w-full p-3 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-center">
-            <!-- Options populated by JS -->
-          </select>
-          <button id="language-continue-btn" class="btn btn-primary" data-translate-key="continue_btn">Continue</button>
+    <div id="page-language" class="page active flex-col items-center w-full">
+      <div class="card w-full">
+        <h2 class="logo">Tokyo Girls Hub</h2>
+        <p class="tagline">Choose your language to continue</p>
+        <div class="flex flex-col gap-4 max-w-md mx-auto">
+          <select id="language-select" class="w-full p-3 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-center"></select>
+          <button id="language-continue-btn" class="btn btn-primary">
+            Continue
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Other Pages -->
-    <div id="page-first-time" class="page flex-col items-center">
+    <!-- Page: First time -->
+    <div id="page-first-time" class="page flex-col items-center w-full">
       <div class="card">
-        <button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button>
-        <h1 class="logo" data-translate-key="welcome">Welcome</h1>
-        <h2 class="text-2xl font-bold text-center mb-6" data-translate-key="first_time_title">Is this your first time visiting us?</h2>
-        <div class="flex justify-around">
-          <button onclick="showPage('page-services')" class="btn btn-primary w-2/5" data-translate-key="yes_btn">Yes</button>
-          <button onclick="showPage('page-which-girl')" class="btn btn-secondary w-2/5" data-translate-key="no_btn">No</button>
+        <button onclick="goBack()" class="back-button">‹</button>
+        <h2 class="logo" data-translate-key="welcome">Welcome</h2>
+        <h3 class="text-2xl font-bold text-center mb-6" data-translate-key="first_time_title">Is this your first time visiting us?</h3>
+        <div class="flex justify-center gap-3">
+          <button onclick="showPage('page-services')" class="btn btn-primary min-w-40" data-translate-key="yes_btn">Yes</button>
+          <button onclick="showPage('page-which-girl')" class="btn btn-secondary min-w-40" data-translate-key="no_btn">No</button>
         </div>
       </div>
     </div>
 
-    <div id="page-services" class="page flex-col items-center">
+    <!-- Page: Services -->
+    <div id="page-services" class="page flex-col items-center w-full">
       <div class="card">
-        <button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button>
-        <h1 class="logo" data-translate-key="our_services_title">Our Services</h1>
+        <button onclick="goBack()" class="back-button">‹</button>
+        <h2 class="logo" data-translate-key="our_services_title">Our Services</h2>
         <p class="text-center mb-4" data-translate-key="our_services_subtitle">We are a legally registered agency. We offer the following services:</p>
-        <div class="grid grid-cols-3 gap-4 mb-6"></div>
+        <div class="grid-soft mb-6"></div>
         <div class="text-center">
           <button onclick="showPage('page-disclaimer-yes')" class="btn btn-primary" data-translate-key="ok_btn">OK</button>
         </div>
       </div>
     </div>
 
-    <div id="page-disclaimer-yes" class="page flex-col items-center">
+    <!-- Page: Legal -->
+    <div id="page-disclaimer-yes" class="page flex-col items-center w-full">
       <div class="card">
-        <button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button>
-        <h1 class="logo text-red-500" data-translate-key="legal_reminder_title">Legal Reminder</h1>
+        <button onclick="goBack()" class="back-button">‹</button>
+        <h2 class="logo text-red-500" data-translate-key="legal_reminder_title">Legal Reminder</h2>
         <div class="text-md space-y-4 mb-6 text-center legal-text" data-translate-key="legal_reminder_text"></div>
-        <div class="flex justify-around">
-          <button onclick="redirectToBooking()" class="btn btn-primary w-2/5" data-translate-key="confirm_btn">Confirm</button>
-          <button onclick="handleRejection()" class="btn btn-secondary w-2/5" data-translate-key="reject_btn">Reject</button>
+        <div class="flex justify-center gap-3">
+          <button onclick="redirectToBooking()" class="btn btn-primary min-w-40" data-translate-key="confirm_btn">Confirm</button>
+          <button onclick="handleRejection()" class="btn btn-secondary min-w-40" data-translate-key="reject_btn">Reject</button>
         </div>
       </div>
     </div>
 
-    <div id="page-rejected" class="page flex-col items-center">
-      <div class="card">
-        <h1 class="logo" data-translate-key="thank_you">Thank You</h1>
-        <p class="text-center text-lg" data-translate-key="rejection_text">Thanks for your interest. We hope to see you again. Redirecting...</p>
+    <div id="page-rejected" class="page flex-col items-center w-full">
+      <div class="card text-center">
+        <h2 class="logo" data-translate-key="thank_you">Thank You</h2>
+        <p class="text-lg" data-translate-key="rejection_text">Thanks for your interest. We hope to see you again. Redirecting...</p>
       </div>
     </div>
 
-    <div id="page-which-girl" class="page flex-col items-center">
+    <!-- Page: Returning customer -->
+    <div id="page-which-girl" class="page flex-col items-center w-full">
       <div class="card">
-        <button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button>
-        <h1 class="logo" data-translate-key="welcome_back">Welcome Back!</h1>
-        <h2 class="text-xl font-bold text-center mb-4" data-translate-key="which_girl_title">Which girl did you choose last time?</h2>
+        <button onclick="goBack()" class="back-button">‹</button>
+        <h2 class="logo" data-translate-key="welcome_back">Welcome Back!</h2>
+        <h3 class="text-xl font-bold text-center mb-4" data-translate-key="which_girl_title">Which girl did you choose last time?</h3>
         <p class="text-center text-sm mb-6" data-translate-key="which_girl_subtitle">Let us know so we can prepare for your visit.</p>
         <form id="girl-nomination-form">
-          <div class="flex flex-col space-y-4">
+          <div class="flex flex-col gap-4">
             <input
               type="text"
               name="girl_name"
@@ -147,52 +256,49 @@
       </div>
     </div>
 
-    <div id="page-disclaimer-no" class="page flex-col items-center">
+    <div id="page-disclaimer-no" class="page flex-col items-center w-full">
       <div class="card">
-        <button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button>
-        <h1 class="logo text-red-500" data-translate-key="legal_reminder_title">Legal Reminder</h1>
+        <button onclick="goBack()" class="back-button">‹</button>
+        <h2 class="logo text-red-500" data-translate-key="legal_reminder_title">Legal Reminder</h2>
         <div class="text-md space-y-4 mb-6 text-center legal-text" data-translate-key="legal_reminder_text"></div>
-        <div class="flex justify-around">
-          <button onclick="redirectToBooking()" class="btn btn-primary w-2/5" data-translate-key="confirm_btn">Confirm</button>
-          <button onclick="handleRejection()" class="btn btn-secondary w-2/5" data-translate-key="reject_btn">Reject</button>
+        <div class="flex justify-center gap-3">
+          <button onclick="redirectToBooking()" class="btn btn-primary min-w-40" data-translate-key="confirm_btn">Confirm</button>
+          <button onclick="handleRejection()" class="btn btn-secondary min-w-40" data-translate-key="reject_btn">Reject</button>
         </div>
       </div>
     </div>
 
-    <div id="page-form-success" class="page flex-col items-center">
+    <div id="page-form-success" class="page flex-col items-center w-full">
       <div class="card text-center">
-        <button onclick="goBack()" class="back-button" data-translate-key="back_btn">‹</button>
-        <h1 class="logo" data-translate-key="thank_you">Thank You!</h1>
-        <p class="text-lg mb-4" data-translate-key="form_success_text">Your preference has been noted.</p>
+        <button onclick="goBack()" class="back-button">‹</button>
+        <h2 class="logo" data-translate-key="thank_you">Thank You!</h2>
+        <p class="text-lg mb-2" data-translate-key="form_success_text">Your preference has been noted.</p>
         <p class="mb-6" data-translate-key="form_success_subtitle">Please proceed to the disclaimer.</p>
         <button onclick="showPage('page-disclaimer-no')" class="btn btn-primary" data-translate-key="continue_btn">Continue</button>
       </div>
     </div>
   </div>
 
-  <!-- CHAT WIDGET HTML -->
-  <div id="chat-bubble">
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-  </div>
-
-  <div id="chat-widget">
-    <div id="chat-header" data-translate-key="chat_header">AI Assistant</div>
-    <div id="chat-messages"></div>
-    <div id="chat-input-area">
-      <button id="mic-btn" class="chat-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-      </button>
-      <input type="text" id="chat-input" data-translate-key="chat_placeholder" placeholder="Ask a question...">
-      <button id="send-btn" class="chat-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
+  <!-- Conversation panel (transcripts + responses) -->
+  <div id="conversation-panel" aria-live="polite">
+    <div id="panel-header">
+      <span data-translate-key="chat_header">AI Assistant</span>
+      <span class="text-xs text-rose-700/80">Voice-only mode</span>
     </div>
+    <div id="chat-messages"></div>
   </div>
 
-  <!-- VOICE RECORDING OVERLAY HTML -->
+  <!-- Big Mic Button -->
+  <button id="big-mic" title="Tap to start / stop voice">
+    <div class="mic-ring"></div>
+    <div class="mic-ring delay"></div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+  </button>
+
+  <!-- Voice overlay (recording visualizer) -->
   <div id="voice-overlay">
     <div id="voice-visualizer">
-      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="78" height="78" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
     </div>
     <button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button>
   </div>
@@ -216,7 +322,7 @@
       buf[6] = (buf[6] & 0x0f) | 0x40;
       buf[8] = (buf[8] & 0x3f) | 0x80;
       const hex = [...buf].map(b => b.toString(16).padStart(2, '0')).join('');
-      return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+      return \`\${hex.slice(0,8)}-\${hex.slice(8,12)}-\${hex.slice(12,16)}-\${hex.slice(16,20)}-\${hex.slice(20)}\`;
     }
 
     function getSessionId() {
@@ -254,7 +360,7 @@
 
     document.addEventListener('visibilitychange', () => { if (!document.hidden) maybeExpireSession(); });
 
-    // --- TRANSLATION DATA ---
+    // --- TRANSLATIONS (unchanged from your latest version) ---
     const translations = {
       'en': {
         stop_btn: "Stop",
@@ -453,7 +559,7 @@
       { code: 'zh-tw', name: "中文 (繁體 - 廣東話/台灣話)" }
     ];
 
-    // --- HELPERS: UI + TRANSLATION ---
+    // --- UI + Translation helpers ---
     function updateText() {
       const langPack = translations[currentLanguage] || translations['en'];
       document.querySelectorAll('[data-translate-key]').forEach(el => {
@@ -467,6 +573,9 @@
         }
       });
       populateServices();
+      // header label
+      const header = document.querySelector('#panel-header [data-translate-key="chat_header"]');
+      if (header && langPack.chat_header) header.textContent = langPack.chat_header;
     }
 
     function populateLanguages() {
@@ -478,17 +587,18 @@
         option.textContent = lang.name;
         select.appendChild(option);
       });
+      select.value = currentLanguage;
     }
 
     function populateServices() {
-      const grid = document.querySelector('#page-services .grid');
-      const services = translations[currentLanguage].services || translations['en'].services;
+      const grid = document.querySelector('#page-services .grid-soft');
+      const services = (translations[currentLanguage] && translations[currentLanguage].services) || translations['en'].services;
       grid.innerHTML = '';
       services.forEach(service => {
         const card = document.createElement('div');
         card.className = 'service-card';
         const imgText = encodeURIComponent(service.charAt(0));
-        card.innerHTML = `<img src="https://placehold.co/200x200/fbcfe8/be185d?text=${imgText}" alt="${service}"><p>${service}</p>`;
+        card.innerHTML = `<img src="https://placehold.co/400x200/fbcfe8/be185d?text=${imgText}" alt="${service}"><p>${service}</p>`;
         grid.appendChild(card);
       });
     }
@@ -522,21 +632,25 @@
       setTimeout(() => {
         pageHistory = [];
         showPage('page-language');
-      }, 10000);
+      }, 6000);
     }
 
-    // --- NETWORK HELPERS (avoid preflight + robust parsing) ---
+    // --- Network helpers ---
     async function readResponseSafely(response) {
       const ct = response.headers.get('content-type') || '';
-      if (ct.includes('application/json')) {
-        try { return await response.json(); } catch { return {}; }
+      let text;
+      try {
+        if (ct.includes('application/json')) {
+          return await response.json();
+        }
+        text = await response.text();
+        return JSON.parse(text);
+      } catch (_) {
+        return { ok: response.ok, status: response.status, raw: text || '' };
       }
-      const text = await response.text();
-      try { return JSON.parse(text); } catch { return { raw: text }; }
     }
 
-    // Use x-www-form-urlencoded to avoid CORS preflight
-    async function postSimple(payload) {
+    async function postJSON(payload) {
       const resp = await fetch(n8nWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -545,8 +659,7 @@
       return readResponseSafely(resp);
     }
 
-
-    // --- FORM SUBMIT: Girl nomination ---
+    // --- Form submit: nomination (unchanged behavior) ---
     document.getElementById('girl-nomination-form').addEventListener("submit", async function(event) {
       event.preventDefault();
       const girlName = new FormData(event.target).get('girl_name');
@@ -560,7 +673,7 @@
         }
       };
       try {
-        const data = await postSimple(payload);
+        await postJSON(payload);
         showPage('page-form-success');
       } catch (error) {
         console.error('Error submitting to webhook:', error);
@@ -568,15 +681,8 @@
       }
     });
 
-    // --- CHAT WIDGET LOGIC ---
-    const chatWidget = document.getElementById('chat-widget');
-    const chatBubble = document.getElementById('chat-bubble');
+    // --- Conversation panel (voice only) ---
     const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
-    const micBtn = document.getElementById('mic-btn');
-
-    chatBubble.addEventListener('click', () => chatWidget.classList.toggle('active'));
 
     function addChatMessage(message, sender) {
       const msgDiv = document.createElement('div');
@@ -584,84 +690,47 @@
       msgDiv.textContent = message;
       chatMessages.appendChild(msgDiv);
       chatMessages.scrollTop = chatMessages.scrollHeight;
+      return msgDiv;
     }
 
-    async function handleSendMessage() {
-      const message = chatInput.value.trim();
-      if (!message) return;
-      addChatMessage(message, 'user');
-      chatHistory.push({ role: 'user', content: message });
-      chatInput.value = '';
+    function addTypingIndicator() {
+      const wrap = document.createElement('div');
+      wrap.className = 'typing';
+      wrap.innerHTML = `
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      `;
+      chatMessages.appendChild(wrap);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return wrap;
+    }
+    function removeNode(el) { if (el && el.parentNode) el.parentNode.removeChild(el); }
 
-      const payload = {
-        session_id: getSessionId(),
-        type: "chat",
-        payload: { message, history: chatHistory, language: currentLanguage }
-      };
-
+    function speakText(text) {
       try {
-        const data = await postSimple(payload);
-        const aiResponse = (data && data.response) ? data.response : "Thanks! Noted.";
-        addChatMessage(aiResponse, 'ai');
-        chatHistory.push({ role: 'ai', content: aiResponse });
-        speakText(aiResponse);
-      } catch (error) {
-        console.error("Chat error:", error);
-        addChatMessage("Sorry, an error occurred.", 'ai');
-      }
+        window.speechSynthesis.cancel();
+        const uttr = new SpeechSynthesisUtterance(text);
+        // Optional: set language of TTS to currentLanguage if supported
+        uttr.lang = (currentLanguage === 'ja') ? 'ja-JP'
+                 : (currentLanguage === 'ko') ? 'ko-KR'
+                 : (currentLanguage === 'zh' || currentLanguage === 'zh-tw') ? 'zh-CN'
+                 : (currentLanguage === 'es') ? 'es-ES'
+                 : 'en-US';
+        window.speechSynthesis.speak(uttr);
+      } catch (e) { console.warn('Speech synthesis failed:', e); }
     }
 
-    sendBtn.addEventListener('click', handleSendMessage);
-    chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSendMessage(); });
-
-    // --- VOICE RECORDING & TEXT-TO-SPEECH ---
+    // --- Voice pipeline ---
+    const bigMicBtn = document.getElementById('big-mic');
     const voiceOverlay = document.getElementById('voice-overlay');
     const stopRecordingBtn = document.getElementById('stop-recording-btn');
     const visualizer = document.getElementById('voice-visualizer');
+
     let mediaRecorder;
     let audioChunks = [];
     let audioContext, analyser, dataArray, source, rafId;
-
-    function speakText(text) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utterance);
-    }
-
-    async function sendAudioToWebhook(audioBlob) {
-      // Build multipart/form-data with flat fields (no nested "json" string!)
-      const fd = new FormData();
-    
-      // attach the audio file with a filename (helps n8n detect it as binary)
-      fd.append('file', audioBlob, 'voice.webm');
-    
-      // flat metadata fields
-      fd.append('session_id', getSessionId());
-      fd.append('type', 'audio_chat');
-      fd.append('language', currentLanguage);
-    
-      // history is an array, send as JSON-string; you'll parse this in n8n
-      fd.append('history', JSON.stringify(chatHistory));
-    
-      try {
-        const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
-        const data = await readResponseSafely(resp);
-    
-        const transcribedText = (data && data.transcribed_text) ? data.transcribed_text : "Couldn't hear that.";
-        const aiResponse = (data && data.response) ? data.response : "Thanks! Noted.";
-    
-        addChatMessage(transcribedText, 'user');
-        chatHistory.push({ role: 'user', content: transcribedText });
-    
-        addChatMessage(aiResponse, 'ai');
-        chatHistory.push({ role: 'ai', content: aiResponse });
-        speakText(aiResponse);
-      } catch (error) {
-        console.error("Audio chat error:", error);
-        addChatMessage("Sorry, an error occurred with my ears.", 'ai');
-      }
-    }
-
+    let isRecording = false;
 
     function visualize(stream) {
       if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -683,15 +752,29 @@
       draw();
     }
 
+    async function toggleRecording() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        await startRecording();
+      }
+    }
+
     async function startRecording() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         visualize(stream);
+        audioChunks = [];
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.start();
+        isRecording = true;
+        bigMicBtn.classList.add('recording');
         voiceOverlay.style.display = 'flex';
 
-        mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
+        mediaRecorder.addEventListener("dataavailable", (event) => {
+          if (event.data && event.data.size) audioChunks.push(event.data);
+        });
+
         mediaRecorder.addEventListener("stop", () => {
           const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
           audioChunks = [];
@@ -701,7 +784,7 @@
           visualizer.style.transform = 'scale(1)';
         });
       } catch (err) {
-        console.error("Error accessing microphone:", err);
+        console.error("Microphone error:", err);
         alert("Microphone access is required for voice chat. Please allow access and try again.");
       }
     }
@@ -710,24 +793,60 @@
       if (mediaRecorder && mediaRecorder.state === "recording") {
         mediaRecorder.stop();
       }
+      isRecording = false;
+      bigMicBtn.classList.remove('recording');
       voiceOverlay.style.display = 'none';
     }
 
-    micBtn.addEventListener('click', startRecording);
+    async function sendAudioToWebhook(audioBlob) {
+      const typingEl = addTypingIndicator();
+
+      const fd = new FormData();
+      fd.append('file', audioBlob, 'voice.webm');
+      fd.append('session_id', getSessionId());
+      fd.append('type', 'audio_chat');
+      fd.append('language', currentLanguage);
+      fd.append('history', JSON.stringify(chatHistory));
+
+      try {
+        const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
+        const data = await readResponseSafely(resp);
+        // Expect: { transcribed_text: "...", response: "..." }
+        const transcribedText = (data && data.transcribed_text) ? data.transcribed_text : "🎤 (Got your voice message)";
+        const aiResponse = (data && data.response) ? data.response : "Thanks! Noted.";
+
+        removeNode(typingEl);
+
+        addChatMessage(transcribedText, 'user');
+        chatHistory.push({ role: 'user', content: transcribedText });
+
+        addChatMessage(aiResponse, 'ai');
+        chatHistory.push({ role: 'ai', content: aiResponse });
+
+        speakText(aiResponse);
+      } catch (error) {
+        console.error("Audio chat error:", error);
+        removeNode(typingEl);
+        addChatMessage("Sorry, an error occurred with my ears.", 'ai');
+      }
+    }
+
+    bigMicBtn.addEventListener('click', toggleRecording);
     stopRecordingBtn.addEventListener('click', stopRecording);
 
-    // --- INITIALIZE APP ---
+    // --- Initialize app ---
     function init() {
       populateLanguages();
       showPage('page-language');
       maybeExpireSession();
+      updateText();
     }
 
     document.getElementById('language-continue-btn').addEventListener('click', () => {
-      // Start a fresh session for each new customer
-      resetSession();
+      resetSession(); // new customer = new session
       const select = document.getElementById('language-select');
       currentLanguage = select.value;
+      updateText();
       showPage('page-first-time');
     });
 
