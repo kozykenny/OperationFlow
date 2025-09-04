@@ -72,7 +72,7 @@
         #close-panel-btn { background: none; border: none; font-size: 1.75rem; font-weight: bold; cursor: pointer; line-height: 1; color: var(--rose-700); opacity: 0.7; }
         #close-panel-btn:hover { opacity: 1; }
         #chat-messages{ flex:1; padding: 1rem; overflow-y:auto; display:flex; flex-direction:column; gap:.6rem; background: linear-gradient(180deg, #fff, #fff9fb 60%, #fff); }
-        .chat-message { max-width: 84%; padding: 0.55rem 0.75rem; border-radius: 0.9rem; line-height: 1.4; font-size:.98rem; }
+        .chat-message { max-width: 84%; padding: 0.55rem 0.75rem; border-radius: 0.9rem; line-height: 1.4; font-size:.98rem; white-space: pre-wrap; }
         .user-message { background-color: var(--pink); color: white; align-self: flex-end; border-bottom-right-radius: 0.3rem; }
         .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
         .typing { align-self: flex-start; background-color: #f3f4f6; color: #374151; border-bottom-left-radius: 0.3rem; display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 0.75rem; border-radius: 0.9rem; max-width: 84%; }
@@ -306,10 +306,10 @@
                 const transcribedText = data?.transcribed_text || "🎤 (Voice message received)";
                 const aiResponse = data?.response || "Thank you, your message has been noted.";
                 if (typingEl.parentNode) typingEl.remove();
-                addChatMessage(transcribedText, 'user');
-                chatHistory.push({ role: 'user', content: transcribedText });
                 addChatMessage(aiResponse, 'ai');
                 chatHistory.push({ role: 'ai', content: aiResponse });
+                addChatMessage(transcribedText, 'user');
+                chatHistory.push({ role: 'user', content: transcribedText });
                 speakText(aiResponse);
                 resetInactivityTimer();
             } catch (error) {
