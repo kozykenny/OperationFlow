@@ -112,6 +112,25 @@
         .mic-ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid rgba(236,72,153,.35); animation: ringPulse 1.6s ease-out infinite; }
         .mic-ring.delay { animation-delay: .35s; opacity:.6; }
         @keyframes ringPulse { 0% { transform: scale(.9); opacity:.9; } 100% { transform: scale(1.15); opacity:0; } }
+        
+        #reopen-chat-btn {
+            background-color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0,0,0,0.05);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            backdrop-filter: blur(4px);
+            color: var(--pink);
+            transition: background-color .2s ease;
+        }
+        #reopen-chat-btn:hover {
+            background-color: white;
+        }
 
         #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 60; flex-direction: column; }
         #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(236,72,153,.45); }
@@ -169,6 +188,9 @@
     <div id="voice-assistant-trigger">
         <button id="big-mic" title="Tap to start voice input"><div class="mic-ring"></div><div class="mic-ring delay"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
         <p id="mic-prompt" data-translate-key="voice_prompt_text"></p>
+        <button id="reopen-chat-btn" title="Show chat history" class="reopen-btn ml-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
     </div>
 
     <div id="voice-overlay"><div id="voice-visualizer"><svg xmlns="http://www.w3.org/2000/svg" width="78" height="78" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></div><button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button></div>
@@ -306,10 +328,13 @@
                 const transcribedText = data?.transcribed_text || "🎤 (Voice message received)";
                 const aiResponse = data?.response || "Thank you, your message has been noted.";
                 if (typingEl.parentNode) typingEl.remove();
-                addChatMessage(aiResponse, 'ai');
-                chatHistory.push({ role: 'ai', content: aiResponse });
+                
                 addChatMessage(transcribedText, 'user');
                 chatHistory.push({ role: 'user', content: transcribedText });
+                
+                addChatMessage(aiResponse, 'ai');
+                chatHistory.push({ role: 'ai', content: aiResponse });
+
                 speakText(aiResponse);
                 resetInactivityTimer();
             } catch (error) {
@@ -403,6 +428,15 @@
 
             document.getElementById('not-sure-btn').addEventListener('click', async () => {
                 await sendNomination('Not Sure');
+            });
+            
+            document.getElementById('reopen-chat-btn').addEventListener('click', () => {
+                if (!isPanelVisible) {
+                    conversationPanel.style.display = 'flex';
+                    isPanelVisible = true;
+                }
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                resetInactivityTimer();
             });
         }
         document.getElementById('language-continue-btn').addEventListener('click', () => { 
