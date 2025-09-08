@@ -18,15 +18,12 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: 
-                radial-gradient(60rem 60rem at 10% -10%, rgba(236,72,153,.12), transparent 40%),
-                radial-gradient(70rem 70rem at 110% 10%, rgba(236,72,153,.12), transparent 40%),
-                linear-gradient(135deg, #fff 0%, #fff 100%);
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
             color: #374151;
             margin: 0;
-            display: flex; /* Centering fix */
-            align-items: center; /* Centering fix */
-            justify-content: center; /* Centering fix */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .page-content { display: none; }
         .page-content.active { display: flex; justify-content: center; }
@@ -44,7 +41,7 @@
             transition: transform .2s ease, box-shadow .2s ease;
         }
         .card:hover{ transform: translateY(-2px); box-shadow: 0 28px 48px -24px rgba(236,72,153,.3), 0 14px 28px -22px rgba(0,0,0,.12); }
-
+        
         .btn {
             display: inline-flex; align-items:center; justify-content:center; gap:.5rem;
             padding: 0.9rem 1.5rem; border-radius: 0.9rem; font-weight: 600;
@@ -59,6 +56,7 @@
         .logo { font-size: 2.25rem; font-weight: 800; color: var(--pink); text-align: center; margin-bottom: 0.5rem; }
         .page-title { font-size: 1.75rem; font-weight: 700; text-align: center; margin-bottom: 2rem; }
         .service-card { background:linear-gradient(180deg,#fff,rgba(255,255,255,.9)); border:1px solid rgba(236,72,153,.2); border-radius: 0.9rem; overflow: hidden; text-align: center; color: var(--rose-700); font-weight: 500; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .service-card img { height: 120px; width: 100%; object-fit: cover; }
         .back-button { position: absolute; top: 1rem; left: 1rem; background: white; border: 1px solid #f3f4f6; cursor: pointer; color: #6b7280; font-weight: 700; font-size: 1.2rem; line-height: 1; width:36px; height:36px; border-radius:.75rem; display:flex;align-items:center;justify-content:center; }
         
         #conversation-panel{
@@ -219,7 +217,7 @@
             'en': { voice_prompt_text: "Have a question? Tap to speak.", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", welcome: "Welcome to Tokyo Girls Hub", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "I Understand", legal_reminder_title: "⚖️ Legal Notice", legal_reminder_text: "In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. 🚫<br><br>Our agency fully complies with all regulations, and we require our clients' cooperation. Please do not request such services.<br><br>All fees are for our companion's time and pleasant company only. We appreciate your understanding. 😊", confirm_btn: "I Agree", reject_btn: "I Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", which_girl_subtitle: "Your preference helps us prepare for your visit.", girl_name_placeholder: "Enter companion's name here", not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Massage", "Cuddling"], back_btn: "‹", chat_header: "AI Assistant" },
             'ja': { voice_prompt_text: "ご質問はありますか？タップして話してください。", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "ご希望の言語をお選びください", welcome: "Tokyo Girls Hubへようこそ", first_time_title: "初めてのご利用でいらっしゃいますか？", yes_btn: "はい", no_btn: "いいえ", our_services_title: "サービス内容", our_services_subtitle: "当店は法令を遵守する正規のエスコートエージェンシーです。以下のサービスを提供しております。", ok_btn: "確認しました", legal_reminder_title: "⚖️ 法的事項のご確認", legal_reminder_text: "日本の法律により、金銭を対価とする性交渉は固く禁じられております。🚫<br><br>当店は法令を完全に遵守しており、お客様にもご協力をお願いしております。法律に抵触するサービスはご要望いただけません。<br><br>料金は、コンパニオンとの楽しいお時間と会話に対して発生するものです。何卒、ご理解ご協力のほどお願い申し上げます。😊", confirm_btn: "同意する", reject_btn: "同意しない", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、誠にありがとうございます。またの機会にお待ちしております。リダイレクト中…", welcome_back: "再度のご利用ありがとうございます", which_girl_title: "前回のコンパニオン名を覚えていますか？", which_girl_subtitle: "事前にお知らせいただくことで、よりスムーズなご案内が可能となります。", girl_name_placeholder: "コンパニオン名を入力してください", not_sure_btn: "覚えていない", submit_continue_btn: "送信して続ける", form_success_text: "ご希望を承りました。ありがとうございます。", form_success_subtitle: "引き続き、法的事項の確認へお進みください。", continue_btn: "続ける", services: ["キス", "ハンドジョブ", "ボール舐め", "フェラチオ", "ボディタッチ", "全身舐め", "シックスナイン", "マッサージ", "添い寝"], back_btn: "‹", chat_header: "AIアシスタント" },
             'zh': { voice_prompt_text: "有问题吗？点击交谈。", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", welcome: "欢迎光临 Tokyo Girls Hub", first_time_title: "请问您是首次光临吗？", yes_btn: "是", no_btn: "不是", our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的服务机构，为您提供以下服务项目：", ok_btn: "我已了解", legal_reminder_title: "⚖️ 法律声明", legal_reminder_text: "根据日本法律，任何金钱交易性质的性行为均属严重违法。🚫<br><br>我们严格遵守所有法规，因此恳请顾客不要提出此类服务要求。<br><br>您的费用仅用于支付女伴的陪伴时间与愉快交流。非常感谢您的理解与合作！😊", confirm_btn: "我同意", reject_btn: "我拒绝", thank_you: "谢谢您", rejection_text: "感谢您的光临，期待下次能为您服务。页面跳转中…", welcome_back: "欢迎回来！", which_girl_title: "您还记得上次的女伴名字吗？", which_girl_subtitle: "告知我们能帮助我们更好地为您准备。", girl_name_placeholder: "在此输入女伴的名字", not_sure_btn: "不确定", submit_continue_btn: "提交并继续", form_success_text: "谢谢，我们已记录您的偏好。", form_success_subtitle: "请继续阅读法律声明。", continue_btn: "继续", services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔全身", "69", "按摩", "拥抱"], back_btn: "‹", chat_header: "AI 助手" },
-            'ko': { voice_prompt_text: "질문이 있으신가요? 탭해서 말씀하세요。", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택해 주세요", welcome: "Tokyo Girls Hub에 오신 것을 환영합니다", first_time_title: "처음 방문이신가요?", yes_btn: "네", no_btn: "아니요", our_services_title: "서비스 안내", our_services_subtitle: "저희는 합법적으로 등록된 에이전시이며, 다음과 같은 서비스를 제공합니다:", ok_btn: "확인했습니다", legal_reminder_title: "⚖️ 법적 고지 사항", legal_reminder_text: "일본 법률에 따라 금전적 대가가 오가는 성관계는 엄격히 금지되어 있습니다. 🚫<br><br>저희는 법률을 철저히 준수하고 있으므로, 해당 서비스 요청은 삼가 주시기 바랍니다。<br><br>지불하시는 비용은 컴패니언과의 즐거운 시간 및 대화에 대한 것입니다. 고객님의 깊은 이해와 협조에 감사드립니다. 😊", confirm_btn: "동의합니다", reject_btn: "거부합니다", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다시 뵙기를 바랍니다. 리디렉션 중…", welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지난번 컴패니언의 이름을 기억하시나요?", which_girl_subtitle: "선호하시는 분을 알려주시면 더 나은 서비스를 준비하는 데 도움이 됩니다。", girl_name_placeholder: "컴패니언 이름 입력", not_sure_btn: "잘 모르겠어요", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다, 선호 사항이 기록되었습니다。", form_success_subtitle: "다음 법적 고지 사항을 확인해 주십시오。", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "마사지", "포옹"], back_btn: "‹", chat_header: "AI 어시스턴트" },
+            'ko': { voice_prompt_text: "질문이 있으신가요? 탭해서 말씀하세요。", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택해 주세요", welcome: "Tokyo Girls Hub에 오신 것을 환영합니다", first_time_title: "처음 방문이신가요?", yes_btn: "네", no_btn: "아니요", our_services_title: "서비스 안내", our_services_subtitle: "저희는 합법적으로 등록된 에이전시이며, 다음과 같은 서비스를 제공합니다:", ok_btn: "확인했습니다", legal_reminder_title: "⚖️ 법的 고지 사항", legal_reminder_text: "일본 법률에 따라 금전적 대가가 오가는 성관계는 엄격히 금지되어 있습니다. 🚫<br><br>저희는 법률을 철저히 준수하고 있으므로, 해당 서비스 요청은 삼가 주시기 바랍니다。<br><br>지불하시는 비용은 컴패니언과의 즐거운 시간 및 대화에 대한 것입니다. 고객님의 깊은 이해와 협조에 감사드립니다. 😊", confirm_btn: "동의합니다", reject_btn: "거부합니다", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다시 뵙기를 바랍니다. 리디렉션 중…", welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지난번 컴패니언의 이름을 기억하시나요?", which_girl_subtitle: "선호하시는 분을 알려주시면 더 나은 서비스를 준비하는 데 도움이 됩니다。", girl_name_placeholder: "컴패니언 이름 입력", not_sure_btn: "잘 모르겠어요", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다, 선호 사항이 기록되었습니다。", form_success_subtitle: "다음 법적 고지 사항을 확인해 주십시오。", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "마사지", "포옹"], back_btn: "‹", chat_header: "AI 어시스턴트" },
             'es': { voice_prompt_text: "¿Tiene una pregunta? Toque para hablar.", search_placeholder: "Buscar idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", welcome: "Bienvenido a Tokyo Girls Hub", first_time_title: "¿Es su primera vez con nosotros?", yes_btn: "Sí", no_btn: "No", our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada y ofrecemos los siguientes servicios:", ok_btn: "Comprendido", legal_reminder_title: "⚖️ Aviso Legal", legal_reminder_text: "Conforme a la legislación japonesa, el intercambio de dinero por actos sexuales es estrictamente ilegal. 🚫<br><br>Nuestra agencia cumple rigurosamente con la ley, por lo que le rogamos no solicitar dichos servicios.<br><br>El pago se realiza exclusivamente por el tiempo y la grata compañía de nuestras acompañantes. ¡Agradecemos su comprensión y cooperación! 😊", confirm_btn: "Acepto", reject_btn: "Rechazo", thank_you: "Gracias", rejection_text: "Agradecemos su interés. Esperamos verle de nuevo. Redirigiendo…", welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Recuerda el nombre de su acompañante?", which_girl_subtitle: "Conocer su preferencia nos ayuda a preparar su visita.", girl_name_placeholder: "Introduzca el nombre de la acompañante", not_sure_btn: "No estoy seguro", submit_continue_btn: "Enviar y Continuar", form_success_text: "Gracias, hemos anotado su preferencia.", form_success_subtitle: "Por favor, continúe con el aviso legal.", continue_btn: "Continuar", services: ["Besos", "Masturbación", "Lamer testículos", "Sexo oral", "Tocar", "Lamer el cuerpo", "69", "Masaje", "Abrazos"], back_btn: "‹", chat_header: "Asistente de IA" },
             'zh-tw': { voice_prompt_text: "有問題嗎？點擊交談。", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", welcome: "歡迎蒞臨 Tokyo Girls Hub", first_time_title: "請問您是首次光臨嗎？", yes_btn: "是", no_btn: "不是", our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的服務機構，為您提供以下服務項目：", ok_btn: "我已了解", legal_reminder_title: "⚖️ 法律聲明", legal_reminder_text: "根據日本法律，任何金錢交易性質的性行為均屬嚴重違法。🚫<br><br>我們嚴格遵守所有法規，因此懇請顧客不要提出此類服務要求。<br><br>您的費用僅用於支付女伴的陪伴時間與愉快交流。非常感謝您的理解與合作！😊", confirm_btn: "我同意", reject_btn: "我拒絕", thank_you: "謝謝您", rejection_text: "感謝您的光臨，期待下次能為您服務。頁面跳轉中…", welcome_back: "歡迎回來！", which_girl_title: "您還記得上次的女伴名字嗎？", which_girl_subtitle: "告知我們能幫助我們更好地為您準備。", girl_name_placeholder: "在此輸入女伴的名字", not_sure_btn: "不確定", submit_continue_btn: "提交並繼續", form_success_text: "謝謝，我們已記錄您的偏好。", form_success_subtitle: "請繼續閱讀法律聲明。", continue_btn: "繼續", services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔全身", "69", "按摩", "擁抱"], back_btn: "‹", chat_header: "AI 助理" }
         };
@@ -331,13 +329,13 @@
                 addChatMessage(transcribedText, 'user');
                 chatHistory.push({ role: 'user', content: transcribedText });
                 
-                addChatMessage(aiResponse, 'ai');
-                chatHistory.push({ role: 'ai', content: aiResponse });
+                // Use a short delay to simulate thinking and ensure user message appears first
+                setTimeout(() => {
+                    addChatMessage(aiResponse, 'ai');
+                    chatHistory.push({ role: 'ai', content: aiResponse });
+                    resetInactivityTimer();
+                }, 300);
 
-                // Audio playback is disabled as per user request.
-                // speakText(aiResponse);
-                
-                resetInactivityTimer();
             } catch (error) {
                 console.error("Audio chat error:", error);
                 if (typingEl.parentNode) typingEl.remove();
@@ -432,12 +430,14 @@
             });
             
             document.getElementById('reopen-chat-btn').addEventListener('click', () => {
-                if (!isPanelVisible) {
+                if (isPanelVisible) {
+                    closeConversationPanel();
+                } else {
                     conversationPanel.style.display = 'flex';
                     isPanelVisible = true;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    resetInactivityTimer();
                 }
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                resetInactivityTimer();
             });
         }
         document.getElementById('language-continue-btn').addEventListener('click', () => { 
