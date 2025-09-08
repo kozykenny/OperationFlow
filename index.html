@@ -309,7 +309,6 @@
 
         function addChatMessage(message, sender) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; chatMessages.appendChild(msgDiv); chatMessages.scrollTop = chatMessages.scrollHeight; return msgDiv; }
         function addTypingIndicator() { const wrap = document.createElement('div'); wrap.className = 'typing'; wrap.innerHTML = `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`; chatMessages.appendChild(wrap); chatMessages.scrollTop = chatMessages.scrollHeight; return wrap; }
-        function speakText(text) { try { window.speechSynthesis.cancel(); const uttr = new SpeechSynthesisUtterance(text); uttr.lang = currentLanguage.startsWith('zh') ? 'zh-CN' : currentLanguage; window.speechSynthesis.speak(uttr); } catch (e) { console.warn('Speech synthesis failed:', e); } }
         
         async function sendAudioToWebhook(audioBlob) {
             const typingEl = addTypingIndicator();
@@ -335,7 +334,9 @@
                 addChatMessage(aiResponse, 'ai');
                 chatHistory.push({ role: 'ai', content: aiResponse });
 
-                speakText(aiResponse);
+                // Audio playback is disabled as per user request.
+                // speakText(aiResponse);
+                
                 resetInactivityTimer();
             } catch (error) {
                 console.error("Audio chat error:", error);
