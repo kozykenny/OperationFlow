@@ -120,6 +120,10 @@
         .ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid; animation: ringPulse 1.6s ease-out infinite; }
         .ring.delay { animation-delay: .35s; opacity:.6; }
         @keyframes ringPulse { 0% { transform: scale(.9); opacity:.9; } 100% { transform: scale(1.15); opacity:0; } }
+
+        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 60; flex-direction: column; }
+        #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+        #stop-recording-btn { margin-top: 1.2rem; background: #fff; color: var(--pink); border: 2px solid var(--pink-200); width: 110px; height: 48px; border-radius: 9999px; font-size: .95rem; font-weight: 700; cursor: pointer; }
         
         .speaker-toggle { display: flex; background: #e5e7eb; border-radius: .75rem; padding: .25rem; }
         .speaker-toggle button { flex: 1; padding: .5rem; border-radius: .5rem; border: none; background: transparent; font-weight: 600; color: #6b7280; transition: background-color .2s ease, color .2s ease;}
@@ -174,6 +178,8 @@
             <p class="control-prompt" data-translate-key="translator_prompt">Translator</p>
         </div>
     </div>
+    
+    <div id="voice-overlay"><div id="voice-visualizer"></div><button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button></div>
 
     <script>
         // --- CONFIGURATION ---
@@ -213,7 +219,9 @@
         const translationConversationPanel = document.getElementById('translation-panel');
         const bigMicBtn = document.getElementById('big-mic');
         const translateBtn = document.getElementById('translate-btn');
-        let audioContext, analyser, dataArray, source, rafId, visualizingElement = null;
+        const voiceOverlay = document.getElementById('voice-overlay');
+        const stopRecordingBtn = document.getElementById('stop-recording-btn');
+        let audioContext, analyser, dataArray, source, rafId;
 
         function updateText() { const langPack = translations[currentLanguage] || translations['en']; document.querySelectorAll('[data-translate-key]').forEach(el => { const key = el.getAttribute('data-translate-key'); if (langPack[key]) { if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = langPack[key]; } else { el.innerHTML = langPack[key]; } } }); populateServices(); }
         function populateLanguages(filter = '') {
@@ -397,8 +405,8 @@
             }
         }
         function visualize(stream) {
-            visualizingElement = document.getElementById(currentChatMode === 'ai' ? 'big-mic' : 'translate-btn');
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const visualizer = document.getElementById('voice-visualizer');
             source = audioContext.createMediaStreamSource(stream);
             analyser = audioContext.createAnalyser();
             analyser.fftSize = 256;
@@ -410,21 +418,20 @@
                 if (!analyser) return;
                 analyser.getByteFrequencyData(dataArray);
                 const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
-                const scaleVariation = avg / 255 * 0.2; // Creates a subtle pulse from 0 to 0.2
-                if (visualizingElement) {
-                    visualizingElement.style.transform = `scale(${1.1 + scaleVariation})`;
-                }
+                visualizer.style.transform = `scale(${1 + (avg / 128)})`;
             };
             draw();
         }
         async function startRecording() {
             if (isRecording) return;
-            closeAllPanels();
+            
             const panel = document.getElementById(currentChatMode === 'ai' ? 'conversation-panel' : 'translation-panel');
+            closeAllPanels();
             panel.style.display = 'flex';
             
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                voiceOverlay.style.display = 'flex';
                 visualize(stream);
                 audioChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
@@ -445,20 +452,16 @@
             if (mediaRecorder?.state === "recording") mediaRecorder.stop();
             isRecording = false;
             
+            voiceOverlay.style.display = 'none';
+            document.getElementById('big-mic').classList.remove('recording');
+            document.getElementById('translate-btn').classList.remove('recording');
+
             if (rafId) cancelAnimationFrame(rafId);
             rafId = null;
             if (source) source.disconnect();
-
-            if (visualizingElement) {
-                visualizingElement.classList.remove('recording');
-                visualizingElement.style.transform = '';
-                visualizingElement = null;
-            } else { // Fallback in case element is lost
-                document.getElementById('big-mic').classList.remove('recording');
-                document.getElementById('translate-btn').classList.remove('recording');
-                document.getElementById('big-mic').style.transform = '';
-                document.getElementById('translate-btn').style.transform = '';
-            }
+            
+            const visualizer = document.getElementById('voice-visualizer');
+            if(visualizer) visualizer.style.transform = 'scale(1)';
         }
         async function toggleRecording() { isRecording ? stopRecording() : await startRecording(); }
 
@@ -502,6 +505,7 @@
                 currentChatMode = 'translation';
                 toggleRecording();
             });
+            stopRecordingBtn.addEventListener('click', stopRecording);
             
             document.getElementById('speaker-customer').addEventListener('click', () => {
                 currentSpeaker = 'customer';
