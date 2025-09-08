@@ -12,9 +12,11 @@
             --pink-100: #fce7f3;
             --pink-200: #fbcfe8;
             --rose-700: #be185d;
+            --violet: #8b5cf6;
         }
         html, body {
             height: 100%;
+            overflow: hidden; /* Prevent scrollbars during drag */
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -34,28 +36,17 @@
             backdrop-filter: blur(14px);
             border: 1px solid rgba(236, 72, 153, 0.18);
             border-radius: 1.25rem;
-            padding: 2.5rem;
+            padding: 3rem;
             box-shadow: 0 20px 40px -20px rgba(236, 72, 153, 0.25), 0 10px 24px -18px rgba(0,0,0,.1);
             width: 100%;
-            max-width: 720px;
-            transition: transform .2s ease, box-shadow .2s ease;
+            max-width: 896px;
+            transition: transform .3s ease, box-shadow .3s ease;
         }
-        .card:hover{ transform: translateY(-2px); box-shadow: 0 28px 48px -24px rgba(236,72,153,.3), 0 14px 28px -22px rgba(0,0,0,.12); }
         
-        /* Legal Notice Card Style */
-        .legal-card {
-            background-color: rgba(31, 41, 55, 0.9); /* bg-gray-800/90 */
-            backdrop-filter: blur(14px);
-            border: 1px solid rgb(75 85 99); /* border-gray-700 */
-            border-radius: 1.25rem;
-            padding: 2rem;
-            width: 100%;
-            max-width: 720px;
-        }
-
         .btn {
             display: inline-flex; align-items:center; justify-content:center; gap:.5rem;
-            padding: 0.9rem 1.5rem; border-radius: 0.9rem; font-weight: 600;
+            padding: 1rem 1.75rem;
+            border-radius: 0.9rem; font-weight: 600;
             transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease;
             cursor: pointer; border: 1px solid transparent; text-align: center;
         }
@@ -64,146 +55,123 @@
         .btn-secondary { background-color: #fff; color: var(--rose-700); border-color: var(--pink-200); }
         .btn-secondary:hover { background-color: var(--pink-100); }
         
-        .logo { font-size: 2.25rem; font-weight: 800; color: var(--pink); text-align: center; margin-bottom: 0.5rem; }
-        .page-title { font-size: 1.75rem; font-weight: 700; text-align: center; margin-bottom: 2rem; }
+        .logo { font-size: clamp(2.25rem, 5vw, 3rem); font-weight: 800; color: var(--pink); text-align: center; margin-bottom: 0.5rem; }
+        .page-title { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; text-align: center; margin-bottom: 2rem; }
         .service-card { background:linear-gradient(180deg,#fff,rgba(255,255,255,.9)); border:1px solid rgba(236,72,153,.2); border-radius: 0.9rem; overflow: hidden; text-align: center; color: var(--rose-700); font-weight: 500; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
         .service-card img { height: 120px; width: 100%; object-fit: cover; }
-        .back-button { position: absolute; top: 1rem; left: 1rem; background: white; border: 1px solid #f3f4f6; cursor: pointer; color: #6b7280; font-weight: 700; font-size: 1.2rem; line-height: 1; width:36px; height:36px; border-radius:.75rem; display:flex;align-items:center;justify-content:center; }
-        .legal-card .back-button { background: #374151; border-color: #4b5563; color: #d1d5db;}
-
-        #conversation-panel{
-            position: fixed; right: 2rem; bottom: 2rem; width: 380px; max-width: 92vw; height: 560px;
-            background: #fff; border:1px solid rgba(236,72,153,.25); border-radius:1.25rem;
+        .back-button { position: absolute; top: 1rem; left: 1rem; background: white; border: 1px solid #f3f4f6; cursor: pointer; color: #6b7280; font-weight: 700; font-size: 1.2rem; line-height: 1; width:36px; height:36px; border-radius:.75rem; display:flex;align-items:center;justify-content:center; z-index: 10; }
+        
+        #conversation-panel, #translation-panel {
+            position: fixed; right: 2rem; bottom: 10rem; width: 380px; max-width: 92vw; height: 560px;
+            background: #fff; border:1px solid rgba(0,0,0,.1); border-radius:1.25rem;
             box-shadow: 0 24px 48px -24px rgba(0,0,0,.2);
             display: none; /* Initially hidden */
-            flex-direction:column; overflow:hidden; z-index: 50;
+            flex-direction:column; overflow:hidden; z-index: 100;
+            transition: width .3s ease, height .3s ease, top .3s ease, left .3s ease, right .3s ease, border-radius .3s ease;
         }
-        #panel-header{ background: linear-gradient(90deg, var(--pink-200), #ffe4ef); padding: .9rem 1rem; font-weight:700; color: var(--rose-700); display:flex; align-items:center; justify-content:space-between; }
-        #close-panel-btn { background: none; border: none; font-size: 1.75rem; font-weight: bold; cursor: pointer; line-height: 1; color: var(--rose-700); opacity: 0.7; }
-        #close-panel-btn:hover { opacity: 1; }
-        #chat-messages{ flex:1; padding: 1rem; overflow-y:auto; display:flex; flex-direction:column; gap:.6rem; background: linear-gradient(180deg, #fff, #fff9fb 60%, #fff); }
+        .panel-header{ background: linear-gradient(90deg, #f3f4f6, #e5e7eb); padding: .9rem 1rem; font-weight:700; color: #374151; display:flex; align-items:center; justify-content:space-between; cursor: grab; }
+        .panel-header:active { cursor: grabbing; }
+        .close-panel-btn { background: none; border: none; font-size: 1.75rem; font-weight: bold; cursor: pointer; line-height: 1; color: #6b7280; opacity: 0.7; }
+        .close-panel-btn:hover { opacity: 1; }
+        .chat-messages{ flex:1; padding: 1rem; overflow-y:auto; display:flex; flex-direction:column; gap:.6rem; background: linear-gradient(180deg, #fff, #f9fafb 60%, #fff); }
         .chat-message { max-width: 84%; padding: 0.55rem 0.75rem; border-radius: 0.9rem; line-height: 1.4; font-size:.98rem; white-space: pre-wrap; }
         .user-message { background-color: var(--pink); color: white; align-self: flex-end; border-bottom-right-radius: 0.3rem; }
-        .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
+        .ai-message, .staff-message, .translation-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
+        .translation-message { border: 1px dashed #d1d5db; color: #6b7280; font-style: italic;}
         .typing { align-self: flex-start; background-color: #f3f4f6; color: #374151; border-bottom-left-radius: 0.3rem; display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 0.75rem; border-radius: 0.9rem; max-width: 84%; }
-        .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: #9ca3af; opacity: 0.6; animation: dotPulse 1.4s infinite ease-in-out; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotPulse { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1.2); opacity: 1; } }
-
-        #voice-assistant-trigger {
-            position: fixed;
-            left: 2rem;
-            bottom: 2rem;
-            display: none; /* Hide by default */
-            align-items: center;
-            gap: 1rem;
-            z-index: 50;
-        }
-        #mic-prompt {
-            color: #4b5563;
-            font-weight: 500;
+        
+        #voice-controls {
+            position: fixed; left: 50%; transform: translateX(-50%); bottom: 2rem;
+            display: none; align-items: center; gap: 1.5rem; z-index: 50;
             background-color: rgba(255, 255, 255, 0.85);
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            backdrop-filter: blur(4px);
+            padding: 1rem; border-radius: 9999px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(0,0,0,0.05);
         }
-        #big-mic {
-            width: 88px; height: 88px; border-radius: 9999px;
-            background: var(--pink); color:#fff; border:none;
+        .control-group { text-align: center; }
+        .control-button {
+            width: 72px; height: 72px; border-radius: 9999px;
+            color:#fff; border:none; position: relative;
             display:flex; align-items:center; justify-content:center; cursor:pointer;
-            box-shadow: 0 16px 36px -18px rgba(236,72,153,.6), 0 10px 16px -14px rgba(0,0,0,.2);
             transition: transform .12s ease, box-shadow .12s ease, background .2s ease;
         }
-        #big-mic:hover{ transform: translateY(-1px); box-shadow: 0 20px 42px -20px rgba(236,72,153,.7), 0 12px 18px -14px rgba(0,0,0,.22); }
-        #big-mic.recording{ background:#f43f5e; }
-        .mic-ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid rgba(236,72,153,.35); animation: ringPulse 1.6s ease-out infinite; }
-        .mic-ring.delay { animation-delay: .35s; opacity:.6; }
+        .control-button:hover{ transform: scale(1.05); }
+        .control-prompt { font-size: 0.75rem; font-weight: 500; color: #4b5563; margin-top: 0.5rem; }
+        #big-mic { background: var(--pink); }
+        #big-mic.recording{ background:#f43f5e; transform: scale(1.1); }
+        #translate-btn { background-color: var(--violet); }
+        #translate-btn.recording { background: #7c3aed; transform: scale(1.1); }
+        .ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid; animation: ringPulse 1.6s ease-out infinite; }
+        .ring.delay { animation-delay: .35s; opacity:.6; }
         @keyframes ringPulse { 0% { transform: scale(.9); opacity:.9; } 100% { transform: scale(1.15); opacity:0; } }
-        
-        #reopen-chat-btn {
-            background-color: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(0,0,0,0.05);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            backdrop-filter: blur(4px);
-            color: var(--pink);
-            transition: background-color .2s ease;
-        }
-        #reopen-chat-btn:hover {
-            background-color: white;
-        }
 
         #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 60; flex-direction: column; }
-        #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(236,72,153,.45); }
+        #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(0,0,0,.3); }
         #stop-recording-btn { margin-top: 1.2rem; background: #fff; color: var(--pink); border: 2px solid var(--pink-200); width: 110px; height: 48px; border-radius: 9999px; font-size: .95rem; font-weight: 700; cursor: pointer; }
         
-        /* Custom Dropdown */
-        .custom-select-container {
-            position: relative;
-        }
+        .speaker-toggle { display: flex; background: #e5e7eb; border-radius: .75rem; padding: .25rem; }
+        .speaker-toggle button { flex: 1; padding: .5rem; border-radius: .5rem; border: none; background: transparent; font-weight: 600; color: #6b7280; transition: background-color .2s ease, color .2s ease;}
+        .speaker-toggle button.active { background: white; color: var(--violet); box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+        
+        /* Custom Dropdown Fix */
+        .custom-select-container { position: relative; }
         .custom-select-options {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid var(--pink-200);
-            border-radius: 0.75rem;
-            margin-top: 0.5rem;
-            z-index: 10;
-            max-height: 250px;
-            overflow-y: auto;
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid var(--pink-200); border-radius: 0.75rem;
+            margin-top: 0.5rem; z-index: 100; max-height: 250px; overflow-y: auto;
             box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
         }
+
+        /* Dragging and Snapping Styles */
+        #app-container.snapped-left { transform: translateX(25%); }
+        #app-container.snapped-right { transform: translateX(-25%); }
+        .panel.snapped { width: 50vw; height: 100vh; top: 0 !important; bottom: 0; border-radius: 0; }
+        .panel.snapped-left { left: 0 !important; right: auto; }
+        .panel.snapped-right { right: 0 !important; left: auto; }
+        .panel.dragging { user-select: none; transition: none !important; }
+
     </style>
 </head>
 <body>
 
     <div id="app-container" class="w-full flex flex-col items-center p-4">
-        <div id="page-language" class="page-content active"><div class="card"><h1 class="logo">Tokyo Girls Hub</h1><h2 class="page-title" data-translate-key="select_language_title">Select Your Language</h2><div class="flex flex-col space-y-4 max-w-md mx-auto">
-            <div id="custom-language-select" class="custom-select-container">
-                <button id="language-select-button" type="button" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-center text-lg flex justify-between items-center">
-                    <span id="selected-language-name">Select Language</span>
-                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.53.22l3.5 3.5a.75.75 0 01-1.06 1.06L10 4.81 7.03 7.78a.75.75 0 01-1.06-1.06l3.5-3.5A.75.75 0 0110 3zm-3.72 9.53a.75.75 0 011.06 0L10 15.19l2.97-2.97a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 010-1.06z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div id="language-options" class="custom-select-options hidden">
-                    <input type="text" id="language-search" class="w-full p-3 border-b border-pink-100 focus:outline-none focus:ring-1 focus:ring-pink-400" data-translate-key="search_placeholder" placeholder="Search language...">
-                    <ul id="language-list" class="py-1"></ul>
-                </div>
-            </div>
-            <button id="language-continue-btn" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button>
-        </div></div></div>
+        <div id="page-language" class="page-content active"><div class="card"><h1 class="logo">Tokyo Girls Hub</h1><h2 class="page-title" data-translate-key="select_language_title">Select Your Language</h2><div class="flex flex-col space-y-4 max-w-md mx-auto"><div id="custom-language-select" class="custom-select-container"><button id="language-select-button" type="button" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-center text-lg flex justify-between items-center"><span id="selected-language-name">Select Language</span><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.53.22l3.5 3.5a.75.75 0 01-1.06 1.06L10 4.81 7.03 7.78a.75.75 0 01-1.06-1.06l3.5-3.5A.75.75 0 0110 3zm-3.72 9.53a.75.75 0 011.06 0L10 15.19l2.97-2.97a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg></button><div id="language-options" class="custom-select-options hidden"><input type="text" id="language-search" class="w-full p-3 border-b border-pink-100 focus:outline-none focus:ring-1 focus:ring-pink-400" data-translate-key="search_placeholder" placeholder="Search language..."><ul id="language-list" class="py-1"></ul></div></div><button id="language-continue-btn" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div></div>
         <div id="page-first-time" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="welcome">Welcome</h1><h2 class="page-title" data-translate-key="first_time_title">Is this your first time visiting us?</h2><div class="flex justify-center gap-4"><button onclick="showPage('page-services')" class="btn btn-primary w-2/5 text-lg" data-translate-key="yes_btn">Yes</button><button onclick="showPage('page-which-girl')" class="btn btn-secondary w-2/5 text-lg" data-translate-key="no_btn">No</button></div></div></div>
         <div id="page-services" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="our_services_title">Our Services</h1><p class="text-center mb-6 text-lg" data-translate-key="our_services_subtitle">We are a legally registered agency. We offer the following services:</p><div class="grid grid-cols-3 gap-4 mb-6"></div><div class="text-center"><button onclick="showPage('page-disclaimer-yes')" class="btn btn-primary text-lg" data-translate-key="ok_btn">OK</button></div></div></div>
-        <div id="page-disclaimer-yes" class="page-content"><div class="legal-card"><button onclick="goBack()" class="back-button">‹</button><h3 class="text-2xl font-bold text-yellow-300 text-center" data-translate-key="legal_reminder_title_serious">【Important】Disclaimer & Terms of Use</h3><div class="mt-4 text-left space-y-3 text-gray-300 text-sm" data-translate-key="legal_reminder_text_serious"></div><p class="mt-6 text-yellow-300 text-center font-semibold" data-translate-key="legal_reminder_agreement"></p><div class="flex justify-center gap-4 mt-6"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5 text-lg" data-translate-key="confirm_btn">Agree</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5 text-lg" data-translate-key="reject_btn">Decline</button></div></div></div>
+        <div id="page-disclaimer-yes" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><svg class="mx-auto h-16 w-16 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><h3 class="text-2xl font-bold text-gray-800 mt-4" data-translate-key="legal_reminder_title_serious">【Important】Disclaimer & Terms of Use</h3><div class="mt-4 text-left space-y-3 text-gray-600 text-base" data-translate-key="legal_reminder_text_serious"></div><p class="mt-6 text-gray-800 font-semibold" data-translate-key="legal_reminder_agreement"></p><div class="flex justify-center gap-4 mt-6"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5 text-lg" data-translate-key="confirm_btn">Agree</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5 text-lg" data-translate-key="reject_btn">Decline</button></div></div></div>
         <div id="page-rejected" class="page-content"><div class="card text-center"><h1 class="logo" data-translate-key="thank_you">Thank You</h1><p class="text-xl" data-translate-key="rejection_text">Thanks for your interest. We hope to see you again. Redirecting...</p></div></div>
         <div id="page-which-girl" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="welcome_back">Welcome Back!</h1><h2 class="page-title" data-translate-key="which_girl_title">Do you remember your companion's name?</h2><form id="girl-nomination-form" class="max-w-md mx-auto"><div class="flex flex-col space-y-4"><input type="text" name="girl_name" data-translate-key="girl_name_placeholder" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-lg"><button type="submit" class="btn btn-primary text-lg" data-translate-key="submit_continue_btn">Submit & Continue</button><button type="button" id="not-sure-btn" class="btn btn-secondary text-lg" data-translate-key="not_sure_btn">I'm Not Sure</button></div></form></div></div>
-        <div id="page-disclaimer-no" class="page-content"><div class="legal-card"><button onclick="goBack()" class="back-button">‹</button><h3 class="text-2xl font-bold text-yellow-300 text-center" data-translate-key="legal_reminder_title_serious">【Important】Disclaimer & Terms of Use</h3><div class="mt-4 text-left space-y-3 text-gray-300 text-sm" data-translate-key="legal_reminder_text_serious"></div><p class="mt-6 text-yellow-300 text-center font-semibold" data-translate-key="legal_reminder_agreement"></p><div class="flex justify-center gap-4 mt-6"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5 text-lg" data-translate-key="confirm_btn">Agree</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5 text-lg" data-translate-key="reject_btn">Decline</button></div></div></div>
+        <div id="page-disclaimer-no" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><svg class="mx-auto h-16 w-16 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><h3 class="text-2xl font-bold text-gray-800 mt-4" data-translate-key="legal_reminder_title_serious">【Important】Disclaimer & Terms of Use</h3><div class="mt-4 text-left space-y-3 text-gray-600 text-base" data-translate-key="legal_reminder_text_serious"></div><p class="mt-6 text-gray-800 font-semibold" data-translate-key="legal_reminder_agreement"></p><div class="flex justify-center gap-4 mt-6"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5 text-lg" data-translate-key="confirm_btn">Agree</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5 text-lg" data-translate-key="reject_btn">Decline</button></div></div></div>
         <div id="page-form-success" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="thank_you">Thank You!</h1><p class="text-xl mb-4" data-translate-key="form_success_text">Your preference has been noted.</p><p class="mb-6 text-lg" data-translate-key="form_success_subtitle">Please proceed to the disclaimer.</p><button onclick="showPage('page-disclaimer-no')" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div>
     </div>
 
-    <div id="conversation-panel" aria-live="polite"><div id="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button id="close-panel-btn" title="Close panel">&times;</button></div><div id="chat-messages"></div></div>
+    <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div></div>
     
-    <div id="voice-assistant-trigger">
-        <button id="big-mic" title="Tap to start voice input"><div class="mic-ring"></div><div class="mic-ring delay"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
-        <p id="mic-prompt" data-translate-key="voice_prompt_text"></p>
-        <button id="reopen-chat-btn" title="Show chat history" class="reopen-btn ml-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        </button>
+    <div id="translation-panel" class="panel">
+        <div id="translation-panel-header" class="panel-header"><span data-translate-key="translator_header">Live Translator</span><button class="close-panel-btn" title="Close panel">&times;</button></div>
+        <div id="translation-chat-messages" class="chat-messages"></div>
+        <div class="p-4 border-t border-gray-200">
+            <div class="speaker-toggle mb-4">
+                <button id="speaker-customer" class="active" data-translate-key="customer_speaker">Customer</button>
+                <button id="speaker-staff" data-translate-key="staff_speaker">Staff</button>
+            </div>
+            <button id="translation-mic-btn" class="w-full btn btn-primary" style="background-color: var(--violet);" data-translate-key="tap_to_speak">Tap to Speak</button>
+        </div>
+    </div>
+    
+    <div id="voice-controls">
+        <div class="control-group">
+            <button id="big-mic" title="Tap to speak with AI assistant" class="control-button"><div class="ring" style="border-color: var(--pink);"></div><div class="ring delay" style="border-color: var(--pink);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
+            <p class="control-prompt" data-translate-key="ai_prompt">AI Assistant</p>
+        </div>
+        <div class="control-group">
+            <button id="translate-btn" title="Tap to speak with a translator" class="control-button"><div class="ring" style="border-color: var(--violet);"></div><div class="ring delay" style="border-color: var(--violet);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="m7 2 3 5"/><path d="m10 14 3-3 5 5"/><path d="m14 11 5 5"/><path d="M11 22h8"/></svg></button>
+            <p class="control-prompt" data-translate-key="translator_prompt">Translator</p>
+        </div>
     </div>
 
-    <div id="voice-overlay"><div id="voice-visualizer"><svg xmlns="http://www.w3.org/2000/svg" width="78" height="78" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></div><button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button></div>
+    <div id="voice-overlay"><div id="voice-visualizer"></div><button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button></div>
 
     <script>
         // --- CONFIGURATION ---
@@ -212,8 +180,9 @@
         let currentLanguage = 'en';
         let pageHistory = [];
         let chatHistory = [];
-        let isPanelVisible = false;
-        let inactivityTimer;
+        let currentChatMode = 'ai'; // 'ai' or 'translation'
+        let currentSpeaker = 'customer'; // 'customer' or 'staff'
+        let mediaRecorder, audioChunks = [], isRecording = false;
 
         // --- SESSION MANAGEMENT ---
         const SESSION_KEY = 'tgh_session_id'; const SESSION_TS_KEY = 'tgh_session_ts';
@@ -224,26 +193,29 @@
         function maybeExpireSession(maxIdleMs = 30 * 60 * 1000) { const last = Number(sessionStorage.getItem(SESSION_TS_KEY) || '0'); if (!last || (Date.now() - last) > maxIdleMs) { resetSession(); } sessionStorage.setItem(SESSION_TS_KEY, Date.now().toString()); }
         document.addEventListener('visibilitychange', () => { if (!document.hidden) maybeExpireSession(); });
 
-        // --- REFINED TRANSLATION DATA ---
+        // --- TRANSLATION DATA ---
         const translations = {
-            'en': { voice_prompt_text: "Have a question? Tap to speak.", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", welcome: "Welcome to Tokyo Girls Hub", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "I Understand", legal_reminder_title_serious: "【Important】Disclaimer & Terms of Use", legal_reminder_text_serious: "<p><strong>1. Legal Compliance:</strong> In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. Our agency fully complies with all regulations.</p><p><strong>2. Client Cooperation:</strong> We require our clients' cooperation in upholding the law. Please do not request services that are illegal in Japan.</p><p><strong>3. Nature of Service:</strong> All fees are for our companion's time and pleasant company only. By proceeding, you acknowledge you are not paying for any illegal acts.</p>", legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", which_girl_subtitle: "Your preference helps us prepare for your visit.", girl_name_placeholder: "Enter companion's name here", not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Massage", "Cuddling"], back_btn: "‹", chat_header: "AI Assistant" },
-            'ja': { voice_prompt_text: "ご質問はありますか？タップして話してください。", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "ご希望の言語をお選びください", welcome: "Tokyo Girls Hubへようこそ", first_time_title: "初めてのご利用でいらっしゃいますか？", yes_btn: "はい", no_btn: "いいえ", our_services_title: "サービス内容", our_services_subtitle: "当店は法令を遵守する正規のエスコートエージェンシーです。以下のサービスを提供しております。", ok_btn: "確認しました", legal_reminder_title_serious: "【重要】免責事項と利用上の注意", legal_reminder_text_serious: "<p><strong>1. 法令遵守について:</strong> 日本の法律により、金銭を対価とする性交渉は固く禁じられております。当店は法令を完全に遵守しております。</p><p><strong>2. お客様へのお願い:</strong> お客様にも法令遵守へのご協力をお願いしております。法律に抵触するサービスはご要望いただけません。</p><p><strong>3. サービスの本質:</strong> 全ての料金は、コンパニオンとの楽しいお時間と会話に対して発生するものです。違法行為の対価ではないことをご理解の上、ご利用ください。</p>", legal_reminder_agreement: "「同意する」をクリックすることで、上記すべての条項を読み、理解したものとみなします。", confirm_btn: "同意する", reject_btn: "同意しない", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、誠にありがとうございます。またの機会にお待ちしております。リダイレクト中…", welcome_back: "再度のご利用ありがとうございます", which_girl_title: "前回のコンパニオン名を覚えていますか？", which_girl_subtitle: "事前にお知らせいただくことで、よりスムーズなご案内が可能となります。", girl_name_placeholder: "コンパニオン名を入力してください", not_sure_btn: "覚えていない", submit_continue_btn: "送信して続ける", form_success_text: "ご希望を承りました。ありがとうございます。", form_success_subtitle: "引き続き、法的事項の確認へお進みください。", continue_btn: "続ける", services: ["キス", "ハンドジョブ", "ボール舐め", "フェラチオ", "ボディタッチ", "全身舐め", "シックスナイン", "マッサージ", "添い寝"], back_btn: "‹", chat_header: "AIアシスタント" },
-            'zh': { voice_prompt_text: "有问题吗？点击交谈。", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", welcome: "欢迎光临 Tokyo Girls Hub", first_time_title: "请问您是首次光临吗？", yes_btn: "是", no_btn: "不是", our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的服务机构，为您提供以下服务项目：", ok_btn: "我已了解", legal_reminder_title_serious: "【重要】免责声明与使用条款", legal_reminder_text_serious: "<p><strong>1. 遵守法律:</strong> 根据日本法律，任何形式的付费性交易都受到严格禁止。本机构完全遵守所有法规。</p><p><strong>2. 客户合作:</strong> 我们要求客户合作遵守法律。请勿要求日本法律禁止的服务。</p><p><strong>3. 服务性质:</strong> 所有费用仅用于我们伴侣的时间和愉快的陪伴。继续操作即表示您承认您并非为任何非法行为付费。</p>", legal_reminder_agreement: "点击“同意”即表示您已阅读并理解这些条款。", confirm_btn: "同意", reject_btn: "拒绝", thank_you: "谢谢您", rejection_text: "感谢您的光临，期待下次能为您服务。页面跳转中…", welcome_back: "欢迎回来！", which_girl_title: "您还记得上次的女伴名字吗？", which_girl_subtitle: "告知我们能帮助我们更好地为您准备。", girl_name_placeholder: "在此输入女伴的名字", not_sure_btn: "不确定", submit_continue_btn: "提交并继续", form_success_text: "谢谢，我们已记录您的偏好。", form_success_subtitle: "请继续阅读法律声明。", continue_btn: "继续", services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔全身", "69", "按摩", "拥抱"], back_btn: "‹", chat_header: "AI 助手" },
-            'ko': { voice_prompt_text: "질문이 있으신가요? 탭해서 말씀하세요。", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택해 주세요", welcome: "Tokyo Girls Hub에 오신 것을 환영합니다", first_time_title: "처음 방문이신가요?", yes_btn: "네", no_btn: "아니요", our_services_title: "서비스 안내", our_services_subtitle: "저희는 합법적으로 등록된 에이전시이며, 다음과 같은 서비스를 제공합니다:", ok_btn: "확인했습니다", legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 모든 형태의 지불은 엄격히 금지됩니다. 저희 에이전시는 모든 규정을 완전히 준수합니다.</p><p><strong>2. 고객 협조:</strong> 저희는 고객 여러분의 법률 준수 협조를 요청합니다. 일본에서 불법인 서비스는 요청하지 마십시오.</p><p><strong>3. 서비스의 성격:</strong> 모든 요금은 저희 동반자의 시간과 즐거운 교제를 위한 것입니다. 계속 진행함으로써 귀하는 불법 행위에 대해 비용을 지불하는 것이 아님을 인정하는 것입니다.</p>", legal_reminder_agreement: "'동의'를 클릭하면 본 약관을 읽고 이해했음을 확인하는 것입니다.", confirm_btn: "동의합니다", reject_btn: "거부합니다", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다시 뵙기를 바랍니다. 리디렉션 중…", welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지난번 컴패니언의 이름을 기억하시나요?", which_girl_subtitle: "선호하시는 분을 알려주시면 더 나은 서비스를 준비하는 데 도움이 됩니다。", girl_name_placeholder: "컴패니언 이름 입력", not_sure_btn: "잘 모르겠어요", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다, 선호 사항이 기록되었습니다。", form_success_subtitle: "다음 법적 고지 사항을 확인해 주십시오。", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "마사지", "포옹"], back_btn: "‹", chat_header: "AI 어시스턴트" },
-            'es': { voice_prompt_text: "¿Tiene una pregunta? Toque para hablar.", search_placeholder: "Buscar idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", welcome: "Bienvenido a Tokyo Girls Hub", first_time_title: "¿Es su primera vez con nosotros?", yes_btn: "Sí", no_btn: "No", our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada y ofrecemos los siguientes servicios:", ok_btn: "Comprendido", legal_reminder_title_serious: "【Importante】Descargo de responsabilidad y Términos de uso", legal_reminder_text_serious: "<p><strong>1. Cumplimiento legal:</strong> De conformidad con la ley japonesa, cualquier forma de pago por relaciones sexuales está estrictamente prohibida. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. No solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al proceder, usted reconoce que no está pagando por ningún acto ilegal.</p>", legal_reminder_agreement: "Al hacer clic en 'Acepto', confirma que ha leído y entendido estos términos.", confirm_btn: "Acepto", reject_btn: "Rechazo", thank_you: "Gracias", rejection_text: "Agradecemos su interés. Esperamos verle de nuevo. Redirigiendo…", welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Recuerda el nombre de su acompañante?", which_girl_subtitle: "Conocer su preferencia nos ayuda a preparar su visita.", girl_name_placeholder: "Introduzca el nombre de la acompañante", not_sure_btn: "No estoy seguro", submit_continue_btn: "Enviar y Continuar", form_success_text: "Gracias, hemos anotado su preferencia.", form_success_subtitle: "Por favor, continúe con el aviso legal.", continue_btn: "Continuar", services: ["Besos", "Masturbación", "Lamer testículos", "Sexo oral", "Tocar", "Lamer el cuerpo", "69", "Masaje", "Abrazos"], back_btn: "‹", chat_header: "Asistente de IA" },
-            'zh-tw': { voice_prompt_text: "有問題嗎？點擊交談。", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", welcome: "歡迎蒞臨 Tokyo Girls Hub", first_time_title: "請問您是首次光臨嗎？", yes_btn: "是", no_btn: "不是", our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的服務機構，為您提供以下服務項目：", ok_btn: "我已了解", legal_reminder_title_serious: "【重要】免責聲明與使用條款", legal_reminder_text_serious: "<p><strong>1. 遵守法律:</strong> 根據日本法律，任何形式的付費性交易都受到嚴格禁止。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作:</strong> 我們要求客戶合作遵守法律。請勿要求日本法律禁止的服務。</p><p><strong>3. 服務性質:</strong> 所有費用僅用於我們伴侶的時間和愉快的陪伴。繼續操作即表示您承認您並非為任何非法行為付費。</p>", legal_reminder_agreement: "點擊「同意」即表示您已閱讀並理解這些條款。", confirm_btn: "我同意", reject_btn: "我拒絕", thank_you: "謝謝您", rejection_text: "感謝您的光臨，期待下次能為您服務。頁面跳轉中…", welcome_back: "歡迎回來！", which_girl_title: "您還記得上次的女伴名字嗎？", which_girl_subtitle: "告知我們能幫助我們更好地為您準備。", girl_name_placeholder: "在此輸入女伴的名字", not_sure_btn: "不確定", submit_continue_btn: "提交並繼續", form_success_text: "謝謝，我們已記錄您的偏好。", form_success_subtitle: "請繼續閱讀法律聲明。", continue_btn: "繼續", services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔全身", "69", "按摩", "擁抱"], back_btn: "‹", chat_header: "AI 助理" }
+            'en': { ai_prompt: "AI Assistant", translator_prompt: "Translator", translator_header: "Live Translator", customer_speaker: "Customer", staff_speaker: "Staff", tap_to_speak: "Tap to Speak", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", welcome: "Welcome to Tokyo Girls Hub", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "I Understand", legal_reminder_title_serious: "【Important】Disclaimer & Terms of Use", legal_reminder_text_serious: "<p><strong>1. Legal Compliance:</strong> In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. Our agency fully complies with all regulations.</p><p><strong>2. Client Cooperation:</strong> We require our clients' cooperation in upholding the law. Please do not request services that are illegal in Japan.</p><p><strong>3. Nature of Service:</strong> All fees are for our companion's time and pleasant company only. By proceeding, you acknowledge you are not paying for any illegal acts.</p>", legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", which_girl_subtitle: "Your preference helps us prepare for your visit.", girl_name_placeholder: "Enter companion's name here", not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Massage", "Cuddling"], back_btn: "‹", chat_header: "AI Assistant" },
         };
         const languageOptions = [ { code: 'en', name: "English" }, { code: 'ja', name: "日本語 (Japanese)" }, { code: 'zh', name: "中文 (简体)" }, { code: 'ko', name: "한국어 (Korean)" }, { code: 'es', name: "Español (Spanish)" }, { code: 'zh-tw', name: "中文 (繁體 - 廣東話/台灣話)" } ];
 
-        // --- UI & TRANSLATION HELPERS ---
+        // --- UI & CORE LOGIC ---
+        const aiChatMessages = document.getElementById('ai-chat-messages');
+        const translationChatMessages = document.getElementById('translation-chat-messages');
+        const aiConversationPanel = document.getElementById('conversation-panel');
+        const translationConversationPanel = document.getElementById('translation-panel');
+        const bigMicBtn = document.getElementById('big-mic');
+        const translateBtn = document.getElementById('translate-btn');
+        const translationMicBtn = document.getElementById('translation-mic-btn');
+        const voiceOverlay = document.getElementById('voice-overlay');
+        const stopRecordingBtn = document.getElementById('stop-recording-btn');
+        let audioContext, analyser, dataArray, source, rafId;
+
         function updateText() { const langPack = translations[currentLanguage] || translations['en']; document.querySelectorAll('[data-translate-key]').forEach(el => { const key = el.getAttribute('data-translate-key'); if (langPack[key]) { el.tagName === 'INPUT' ? el.placeholder = langPack[key] : el.innerHTML = langPack[key]; } }); populateServices(); }
-        
         function populateLanguages(filter = '') {
             const list = document.getElementById('language-list');
             list.innerHTML = '';
-            const filteredOptions = languageOptions.filter(lang => lang.name.toLowerCase().includes(filter.toLowerCase()));
-            
-            filteredOptions.forEach(lang => {
+            languageOptions.filter(lang => lang.name.toLowerCase().includes(filter.toLowerCase())).forEach(lang => {
                 const li = document.createElement('li');
                 li.textContent = lang.name;
                 li.dataset.code = lang.code;
@@ -257,36 +229,35 @@
                 list.appendChild(li);
             });
         }
-
-        function populateServices() { const grid = document.querySelector('#page-services .grid'); if (!grid) return; const services = translations[currentLanguage]?.services || translations['en'].services; grid.innerHTML = ''; services.forEach(service => { const card = document.createElement('div'); card.className = 'service-card'; card.innerHTML = `<img src="${service.image}" alt="${service.name}"><p class="p-3">${service.name}</p>`; grid.appendChild(card); }); }
-        
+        function populateServices() { 
+            const grid = document.querySelector('#page-services .grid'); 
+            if (!grid) return; 
+            const services = translations[currentLanguage]?.services || translations['en'].services; 
+            grid.innerHTML = ''; 
+            services.forEach(service => { 
+                const card = document.createElement('div'); 
+                card.className = 'service-card'; 
+                card.innerHTML = `<img src="images/placeholder.png" alt="${service}"><p class="p-3">${service}</p>`; 
+                grid.appendChild(card); 
+            }); 
+        }
         function showPage(pageId, isGoingBack = false) { 
             const currentPage = document.querySelector('.page-content.active'); 
-            if (currentPage && !isGoingBack) { 
-                pageHistory.push(currentPage.id); 
-            } 
+            if (currentPage && !isGoingBack) pageHistory.push(currentPage.id); 
             document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active')); 
             const targetPage = document.getElementById(pageId); 
             if (targetPage) { 
                 targetPage.classList.add('active'); 
                 updateText(); 
             }
-            
-            const voiceTrigger = document.getElementById('voice-assistant-trigger');
-            if (pageId !== 'page-language') {
-                voiceTrigger.style.display = 'flex';
-            } else {
-                voiceTrigger.style.display = 'none';
-            }
+            const voiceControls = document.getElementById('voice-controls');
+            if (pageId !== 'page-language') voiceControls.style.display = 'flex';
+            else voiceControls.style.display = 'none';
         }
-
         function goBack() { if (pageHistory.length > 0) { const prevPageId = pageHistory.pop(); showPage(prevPageId, true); } }
         function redirectToBooking() { window.location.href = bookingUrl; }
         function handleRejection() { showPage('page-rejected'); setTimeout(() => { pageHistory = []; showPage('page-language'); }, 6000); }
-
-        // --- NETWORK & FORM SUBMISSION ---
         async function readResponseSafely(response) { const ct = response.headers.get('content-type') || ''; try { if (ct.includes('application/json')) return await response.json(); const text = await response.text(); return JSON.parse(text); } catch (_) { return { ok: response.ok, status: response.status }; } }
-        
         async function sendNomination(girlName) {
             const payload = { session_id: getSessionId(), type: "nomination", payload: { girl_name: girlName, submitted_at: new Date().toISOString(), language: currentLanguage } };
             try {
@@ -298,30 +269,49 @@
             }
         }
 
+        // --- DRAGGABLE & SNAPPING LOGIC ---
+        function makeDraggable(panel, header) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            header.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                panel.classList.add('dragging');
+            }
+
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                panel.style.bottom = 'auto';
+                panel.style.right = 'auto';
+                panel.style.top = (panel.offsetTop - pos2) + "px";
+                panel.style.left = (panel.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                panel.classList.remove('dragging');
+            }
+        }
+        
         // --- CONVERSATION & VOICE ---
-        const chatMessages = document.getElementById('chat-messages');
-        const bigMicBtn = document.getElementById('big-mic');
-        const voiceOverlay = document.getElementById('voice-overlay');
-        const stopRecordingBtn = document.getElementById('stop-recording-btn');
-        const conversationPanel = document.getElementById('conversation-panel');
-        let mediaRecorder, audioChunks = [], audioContext, analyser, dataArray, source, rafId, isRecording = false;
-
-        function closeConversationPanel() {
-            conversationPanel.style.display = 'none';
-            isPanelVisible = false;
-            clearTimeout(inactivityTimer);
+        function closeAllPanels() {
+            aiConversationPanel.style.display = 'none';
+            translationConversationPanel.style.display = 'none';
         }
-
-        function resetInactivityTimer() {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(closeConversationPanel, 30000); // 30 seconds
-        }
-
-        function addChatMessage(message, sender) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; chatMessages.appendChild(msgDiv); chatMessages.scrollTop = chatMessages.scrollHeight; return msgDiv; }
-        function addTypingIndicator() { const wrap = document.createElement('div'); wrap.className = 'typing'; wrap.innerHTML = `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`; chatMessages.appendChild(wrap); chatMessages.scrollTop = chatMessages.scrollHeight; return wrap; }
+        function addChatMessage(message, sender, panel) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; panel.appendChild(msgDiv); panel.scrollTop = panel.scrollHeight; return msgDiv; }
+        function addTypingIndicator(panel) { const wrap = document.createElement('div'); wrap.className = 'typing'; wrap.innerHTML = `<span>.</span><span>.</span><span>.</span>`; panel.appendChild(wrap); panel.scrollTop = panel.scrollHeight; return wrap; }
         
         async function sendAudioToWebhook(audioBlob) {
-            const typingEl = addTypingIndicator();
+            const typingEl = addTypingIndicator(aiChatMessages);
             const fd = new FormData();
             fd.append('file', audioBlob, 'voice.webm');
             fd.append('session_id', getSessionId());
@@ -334,23 +324,37 @@
                 const transcribedText = data?.transcribed_text || "🎤 (Voice message received)";
                 const aiResponse = data?.response || "Thank you, your message has been noted.";
                 if (typingEl.parentNode) typingEl.remove();
-                
-                addChatMessage(transcribedText, 'user');
+                addChatMessage(transcribedText, 'user', aiChatMessages);
                 chatHistory.push({ role: 'user', content: transcribedText });
-                
                 setTimeout(() => {
-                    addChatMessage(aiResponse, 'ai');
+                    addChatMessage(aiResponse, 'ai', aiChatMessages);
                     chatHistory.push({ role: 'ai', content: aiResponse });
-                    resetInactivityTimer();
                 }, 300);
-
             } catch (error) {
                 console.error("Audio chat error:", error);
                 if (typingEl.parentNode) typingEl.remove();
-                addChatMessage("Sorry, an error occurred with my ears.", 'ai');
+                addChatMessage("Sorry, an error occurred with my ears.", 'ai', aiChatMessages);
             }
         }
-
+        async function sendAudioForTranslation(audioBlob) {
+            const fd = new FormData();
+            fd.append('file', audioBlob, 'voice.webm');
+            fd.append('session_id', getSessionId());
+            fd.append('type', `translation_${currentSpeaker}`);
+            fd.append('language', currentLanguage);
+            try {
+                const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
+                const data = await readResponseSafely(resp);
+                if (data.transcribed_text && data.translated_text) {
+                    const originalSender = currentSpeaker === 'customer' ? 'user' : 'staff';
+                    addChatMessage(data.transcribed_text, originalSender, translationChatMessages);
+                    addChatMessage(`(Translated: ${data.translated_text})`, 'translation', translationChatMessages);
+                }
+            } catch (error) {
+                console.error("Translation error:", error);
+                addChatMessage("Translation failed.", "system", translationChatMessages);
+            }
+        }
         function visualize(stream) {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const visualizer = document.getElementById('voice-visualizer');
@@ -363,14 +367,11 @@
             const draw = () => { rafId = requestAnimationFrame(draw); analyser.getByteFrequencyData(dataArray); const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength; visualizer.style.transform = `scale(${1 + (avg / 128)})`; };
             draw();
         }
-
         async function toggleRecording() { isRecording ? stopRecording() : await startRecording(); }
         async function startRecording() {
-            if (!isPanelVisible) {
-                conversationPanel.style.display = 'flex';
-                isPanelVisible = true;
-            }
-            resetInactivityTimer();
+            closeAllPanels();
+            if (currentChatMode === 'ai') aiConversationPanel.style.display = 'flex';
+            else translationConversationPanel.style.display = 'flex';
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 visualize(stream);
@@ -378,12 +379,13 @@
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
                 isRecording = true;
-                bigMicBtn.classList.add('recording');
+                document.getElementById(currentChatMode === 'ai' ? 'big-mic' : 'translate-btn').classList.add('recording');
                 voiceOverlay.style.display = 'flex';
                 mediaRecorder.addEventListener("dataavailable", (event) => { if (event.data?.size) audioChunks.push(event.data); });
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    sendAudioToWebhook(audioBlob);
+                    if(currentChatMode === 'ai') sendAudioToWebhook(audioBlob);
+                    else sendAudioForTranslation(audioBlob);
                     stream.getTracks().forEach(track => track.stop());
                     if (rafId) cancelAnimationFrame(rafId);
                     document.getElementById('voice-visualizer').style.transform = 'scale(1)';
@@ -393,7 +395,7 @@
         function stopRecording() {
             if (mediaRecorder?.state === "recording") mediaRecorder.stop();
             isRecording = false;
-            bigMicBtn.classList.remove('recording');
+            document.getElementById(currentChatMode === 'ai' ? 'big-mic' : 'translate-btn').classList.remove('recording');
             voiceOverlay.style.display = 'none';
         }
 
@@ -403,62 +405,67 @@
             const langButton = document.getElementById('language-select-button');
             const langOptions = document.getElementById('language-options');
             const langSearch = document.getElementById('language-search');
-            
-            langButton.addEventListener('click', () => {
-                langOptions.classList.toggle('hidden');
-            });
-            
-            langSearch.addEventListener('input', (e) => {
-                populateLanguages(e.target.value);
-            });
-            
+            langButton.addEventListener('click', () => langOptions.classList.toggle('hidden'));
+            langSearch.addEventListener('input', (e) => populateLanguages(e.target.value));
             document.addEventListener('click', (e) => {
                 const container = document.getElementById('custom-language-select');
-                if (!container.contains(e.target)) {
-                    langOptions.classList.add('hidden');
-                }
+                if (container && !container.contains(e.target)) langOptions.classList.add('hidden');
             });
 
             showPage('page-language');
             maybeExpireSession();
             updateText();
-            document.getElementById('close-panel-btn').addEventListener('click', closeConversationPanel);
+            document.querySelectorAll('.close-panel-btn').forEach(btn => btn.addEventListener('click', closeAllPanels));
             
             document.getElementById('girl-nomination-form').addEventListener("submit", async function(event) {
                 event.preventDefault();
                 const girlNameInput = event.target.querySelector('input[name="girl_name"]');
                 const girlName = girlNameInput.value.trim();
-                if (girlName) {
-                    await sendNomination(girlName);
+                if (girlName) await sendNomination(girlName);
+            });
+            document.getElementById('not-sure-btn').addEventListener('click', async () => await sendNomination('Not Sure'));
+            
+            document.getElementById('language-continue-btn').addEventListener('click', () => { 
+                resetSession();
+                if (document.getElementById('selected-language-name').textContent === 'Select Language') currentLanguage = 'en';
+                updateText(); 
+                showPage('page-first-time'); 
+            });
+            bigMicBtn.addEventListener('click', () => {
+                const panel = document.getElementById('conversation-panel');
+                if(panel.style.display === 'flex') {
+                    closeAllPanels();
+                } else {
+                    currentChatMode = 'ai'; 
+                    toggleRecording();
                 }
+            });
+            translateBtn.addEventListener('click', () => {
+                const panel = document.getElementById('translation-panel');
+                if(panel.style.display === 'flex') {
+                    closeAllPanels();
+                } else {
+                    closeAllPanels();
+                    panel.style.display = 'flex';
+                }
+            });
+            translationMicBtn.addEventListener('click', () => { currentChatMode = 'translation'; toggleRecording(); });
+            stopRecordingBtn.addEventListener('click', stopRecording);
+            
+            document.getElementById('speaker-customer').addEventListener('click', () => {
+                currentSpeaker = 'customer';
+                document.getElementById('speaker-customer').classList.add('active');
+                document.getElementById('speaker-staff').classList.remove('active');
+            });
+            document.getElementById('speaker-staff').addEventListener('click', () => {
+                currentSpeaker = 'staff';
+                document.getElementById('speaker-staff').classList.add('active');
+                document.getElementById('speaker-customer').classList.remove('active');
             });
 
-            document.getElementById('not-sure-btn').addEventListener('click', async () => {
-                await sendNomination('Not Sure');
-            });
-            
-            document.getElementById('reopen-chat-btn').addEventListener('click', () => {
-                if (isPanelVisible) {
-                    closeConversationPanel();
-                } else {
-                    conversationPanel.style.display = 'flex';
-                    isPanelVisible = true;
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                    resetInactivityTimer();
-                }
-            });
+            makeDraggable(document.getElementById('conversation-panel'), document.querySelector('#conversation-panel .panel-header'));
+            makeDraggable(document.getElementById('translation-panel'), document.querySelector('#translation-panel .panel-header'));
         }
-        document.getElementById('language-continue-btn').addEventListener('click', () => { 
-            resetSession();
-            const selectedName = document.getElementById('selected-language-name').textContent;
-            if (selectedName === 'Select Language') {
-                currentLanguage = 'en';
-            }
-            updateText(); 
-            showPage('page-first-time'); 
-        });
-        document.getElementById('big-mic').addEventListener('click', toggleRecording);
-        stopRecordingBtn.addEventListener('click', stopRecording);
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
