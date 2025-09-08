@@ -82,15 +82,19 @@
         
         #voice-controls {
             position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 2rem;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
             display: none;
-            align-items: center;
+            flex-direction: column;
             gap: 1.5rem;
             z-index: 50;
         }
-        .control-group { text-align: center; }
+        .control-group { 
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
         .control-button {
             width: 72px; height: 72px; border-radius: 9999px;
             color:#fff; border:none; position: relative;
@@ -99,9 +103,18 @@
             transform-origin: center;
         }
         .control-button:hover{ transform: scale(1.05); }
-        .control-prompt { font-size: 0.75rem; font-weight: 500; color: #4b5563; margin-top: 0.5rem; }
+        .control-prompt { 
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            color: #374151;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            white-space: nowrap;
+        }
         #big-mic { background: var(--pink); }
-        #big-mic.recording{ background:#f43f5e; transform: scale(1.1); }
+        #big-mic.recording{ background: var(--pink); transform: scale(1.1); }
         #translate-btn { background-color: var(--violet); }
         #translate-btn.recording { background: #7c3aed; transform: scale(1.1); }
         .ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid; animation: ringPulse 1.6s ease-out infinite; }
@@ -242,8 +255,11 @@
                 updateText(); 
             }
             const voiceControls = document.getElementById('voice-controls');
-            if (pageId !== 'page-language') voiceControls.style.display = 'flex';
-            else voiceControls.style.display = 'none';
+            if (pageId !== 'page-language') {
+                voiceControls.style.display = 'flex';
+            } else {
+                voiceControls.style.display = 'none';
+            }
         }
         function goBack() { if (pageHistory.length > 0) { const prevPageId = pageHistory.pop(); showPage(prevPageId, true); } }
         function redirectToBooking() { window.location.href = bookingUrl; }
