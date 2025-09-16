@@ -14,9 +14,8 @@
             --rose-700: #be185d;
             --violet: #8b5cf6;
         }
-        html, body {
+        html {
             height: 100%;
-            overflow: hidden; /* Prevent scrollbars during drag */
         }
         body {
             font-family: 'Inter', sans-serif;
@@ -26,6 +25,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow-y: auto; /* Enable vertical scrolling */
+            min-height: 100%;
         }
         .page-content { display: none; }
         .page-content.active { display: flex; justify-content: center; }
@@ -172,7 +173,6 @@
 
     <script>
         // --- CONFIGURATION ---
-        const bookingUrl = 'https://tokyogirlshub.com/en/booking';
         const n8nWebhookUrl = 'https://tokyogirlshub.app.n8n.cloud/webhook/d01e21eb-14c0-41bf-8c7f-cee5a5e3371d';
         let currentLanguage = 'en';
         let pageHistory = [];
@@ -254,7 +254,21 @@
             }
         }
         function goBack() { if (pageHistory.length > 0) { const prevPageId = pageHistory.pop(); showPage(prevPageId, true); } }
-        function redirectToBooking() { window.location.href = bookingUrl; }
+        function redirectToBooking() {
+            let bookingUrl = 'https://tokyogirlshub.com/en/schedule'; // Default URL
+            switch (currentLanguage) {
+                case 'ko':
+                    bookingUrl = 'https://tokyogirlshub.com/kr/schedule';
+                    break;
+                case 'zh':
+                    bookingUrl = 'https://tokyogirlshub.com/zh-CN/schedule';
+                    break;
+                case 'zh-tw':
+                    bookingUrl = 'https://tokyogirlshub.com/zh-TW/schedule';
+                    break;
+            }
+            window.location.href = bookingUrl;
+        }
         function handleRejection() { showPage('page-rejected'); setTimeout(() => { pageHistory = []; showPage('page-language'); }, 6000); }
         async function readResponseSafely(response) { const ct = response.headers.get('content-type') || ''; try { if (ct.includes('application/json')) return await response.json(); const text = await response.text(); return JSON.parse(text); } catch (_) { return { ok: response.ok, status: response.status }; } }
         
@@ -452,4 +466,3 @@
     </script>
 </body>
 </html>
-
