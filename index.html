@@ -258,15 +258,6 @@
         function handleRejection() { showPage('page-rejected'); setTimeout(() => { pageHistory = []; showPage('page-language'); }, 6000); }
         async function readResponseSafely(response) { const ct = response.headers.get('content-type') || ''; try { if (ct.includes('application/json')) return await response.json(); const text = await response.text(); return JSON.parse(text); } catch (_) { return { ok: response.ok, status: response.status }; } }
         
-        function blobToBase64(blob) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        }
-        
         async function sendNomination(girlName) {
             const payload = { session_id: getSessionId(), type: "nomination", payload: { girl_name: girlName, submitted_at: new Date().toISOString(), language: currentLanguage } };
             try {
@@ -320,20 +311,16 @@
         
         async function sendAudioToWebhook(audioBlob) {
             const typingEl = addTypingIndicator(aiChatMessages);
+            const fd = new FormData();
+            fd.append('file', audioBlob, 'voice.webm');
+            fd.append('session_id', getSessionId());
+            fd.append('type', 'audio_chat');
+            fd.append('language', currentLanguage);
+            fd.append('history', JSON.stringify(chatHistory));
             try {
-                const audioBase64 = await blobToBase64(audioBlob);
-                const payload = {
-                    session_id: getSessionId(),
-                    type: 'audio_chat',
-                    language: currentLanguage,
-                    history: chatHistory,
-                    audio_data: audioBase64
-                };
-
-                const resp = await fetch(n8nWebhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                const resp = await fetch(n8nWebhookUrl, { 
+                    method: 'POST', 
+                    body: fd
                 });
 
                 if (!resp.ok) {
@@ -358,37 +345,7 @@
                 addChatMessage(errorMessage, 'ai', aiChatMessages);
             }
         }
-        async function sendAudioForTranslation(audioBlob) {
-             try {
-                const audioBase64 = await blobToBase64(audioBlob);
-                const payload = {
-                    session_id: getSessionId(),
-                    type: `translation_${currentSpeaker}`,
-                    language: currentLanguage,
-                    audio_data: audioBase64
-                };
 
-                const resp = await fetch(n8nWebhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!resp.ok) {
-                    throw new Error(`HTTP error! status: ${resp.status}`);
-                }
-
-                const data = await readResponseSafely(resp);
-                if (data.transcribed_text && data.translated_text) {
-                    const originalSender = currentSpeaker === 'customer' ? 'user' : 'staff';
-                    addChatMessage(data.transcribed_text, originalSender, translationChatMessages);
-                    addChatMessage(`(Translated: ${data.translated_text})`, 'translation', translationChatMessages);
-                }
-            } catch (error) {
-                console.error("Translation error:", error);
-                addChatMessage("Translation failed.", "system", translationChatMessages);
-            }
-        }
         function visualize(stream) {
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
             audioContext.resume();
@@ -411,7 +368,6 @@
         async function startRecording() {
             if (isRecording) return;
             
-            closeAllPanels();
             aiConversationPanel.style.display = 'flex';
             
             try {
@@ -464,7 +420,12 @@
             showPage('page-language');
             maybeExpireSession();
             updateText();
-            document.querySelectorAll('.close-panel-btn').forEach(btn => btn.addEventListener('click', closeAllPanels));
+            document.querySelectorAll('.close-panel-btn').forEach(btn => btn.addEventListener('click', () => {
+                closeAllPanels();
+                if (isRecording) {
+                    stopRecording();
+                }
+            }));
             
             document.getElementById('girl-nomination-form').addEventListener("submit", async function(event) {
                 event.preventDefault();
@@ -480,15 +441,9 @@
                 updateText(); 
                 showPage('page-first-time'); 
             });
-            bigMicBtn.addEventListener('click', () => {
-                if (isRecording) return; 
-                const panel = document.getElementById('conversation-panel');
-                if (panel.style.display === 'flex') {
-                    closeAllPanels();
-                } else {
-                    toggleRecording();
-                }
-            });
+
+            bigMicBtn.addEventListener('click', toggleRecording);
+            
             stopRecordingBtn.addEventListener('click', stopRecording);
             
             makeDraggable(document.getElementById('conversation-panel'), document.querySelector('#conversation-panel .panel-header'));
