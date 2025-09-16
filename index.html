@@ -83,11 +83,10 @@
         #voice-controls {
             position: fixed;
             left: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 2rem;
+            top: auto;
+            transform: none;
             display: none;
-            flex-direction: column;
-            gap: 1.5rem;
             z-index: 50;
         }
         .control-group { 
@@ -157,25 +156,10 @@
 
     <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div></div>
     
-    <div id="translation-panel" class="panel">
-        <div id="translation-panel-header" class="panel-header"><span data-translate-key="translator_header">Live Translator</span><button class="close-panel-btn" title="Close panel">&times;</button></div>
-        <div id="translation-chat-messages" class="chat-messages"></div>
-        <div class="p-4 border-t border-gray-200">
-            <div class="speaker-toggle">
-                <button id="speaker-customer" class="active" data-translate-key="customer_speaker">Customer</button>
-                <button id="speaker-staff" data-translate-key="staff_speaker">Staff</button>
-            </div>
-        </div>
-    </div>
-    
     <div id="voice-controls">
         <div class="control-group">
             <button id="big-mic" title="Tap to speak with AI assistant" class="control-button"><div class="ring" style="border-color: var(--pink);"></div><div class="ring delay" style="border-color: var(--pink);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
             <p class="control-prompt" data-translate-key="ai_prompt">AI Assistant</p>
-        </div>
-        <div class="control-group">
-            <button id="translate-btn" title="Tap to speak with a translator" class="control-button"><div class="ring" style="border-color: var(--violet);"></div><div class="ring delay" style="border-color: var(--violet);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="m7 2 3 5"/><path d="m10 14 3-3 5 5"/><path d="m14 11 5 5"/><path d="M11 22h8"/></svg></button>
-            <p class="control-prompt" data-translate-key="translator_prompt">Translator</p>
         </div>
     </div>
     
@@ -188,8 +172,6 @@
         let currentLanguage = 'en';
         let pageHistory = [];
         let chatHistory = [];
-        let currentChatMode = 'ai'; // 'ai' or 'translation'
-        let currentSpeaker = 'customer'; // 'customer' or 'staff'
         let mediaRecorder, audioChunks = [], isRecording = false;
 
         // --- SESSION MANAGEMENT ---
@@ -203,22 +185,19 @@
 
         // --- TRANSLATION DATA ---
         const translations = {
-            'en': { ai_prompt: "AI Assistant", translator_prompt: "Translator", translator_header: "Live Translator", customer_speaker: "Customer", staff_speaker: "Staff", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "I Understand", legal_reminder_title_serious: "【Important】Disclaimer & Terms of Use", legal_reminder_text_serious: "<p><strong>1. Legal Compliance:</strong> In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. Our agency fully complies with all regulations.</p><p><strong>2. Client Cooperation:</strong> We require our clients' cooperation in upholding the law. Please do not request services that are illegal in Japan.</p><p><strong>3. Nature of Service:</strong> All fees are for our companion's time and pleasant company only. By proceeding, you acknowledge you are not paying for any illegal acts.</p>", legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", girl_name_placeholder: "Enter companion's name here", not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Massage", "Cuddling"], chat_header: "AI Assistant" },
-            'ja': { ai_prompt: "AIアシスタント", translator_prompt: "翻訳者", translator_header: "ライブ翻訳", customer_speaker: "お客様", staff_speaker: "スタッフ", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "確認しました", legal_reminder_title_serious: "【重要】免責事項と利用規約", legal_reminder_text_serious: "<p><strong>1. 法令遵守：</strong>日本の法律に従い、金銭による性的交渉は固く禁じられております。当店は関連法規をすべて遵守しております。</p><p><strong>2. お客様へのお願い：</strong>法律遵守のため、お客様のご協力をお願いいたします。日本で違法とされるサービスの要求はお控えください。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", legal_reminder_agreement: "「同意する」をクリックすることで、上記利用規約を読み、理解したことになります。", confirm_btn: "同意する", reject_btn: "拒否する", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、誠にありがとうございます。またの機会にご利用ください。リダイレクト中です...", welcome_back: "いつもご利用ありがとうございます！", which_girl_title: "ご指名のコンパニオンはいますか？", girl_name_placeholder: "コンパニオン名を入力してください", not_sure_btn: "特に指名なし", submit_continue_btn: "送信して続行", form_success_text: "ありがとうございます。ご希望を承りました。", form_success_subtitle: "利用規約の確認へお進みください。", continue_btn: "続ける", services: ["キス", "手コキ", "玉舐め", "フェラチオ", "タッチ", "ボディ舐め", "69", "マッサージ", "添い寝"], chat_header: "AIアシスタント" },
-            'zh': { ai_prompt: "AI助手", translator_prompt: "翻译员", translator_header: "实时翻译", customer_speaker: "顾客", staff_speaker: "员工", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "我明白了", legal_reminder_title_serious: "【重要】免责声明与使用条款", legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根据日本法律，严禁为性交支付任何形式的报酬。本机构完全遵守所有法规。</p><p><strong>2. 客户合作：</strong>我们要求客户合作以维护法律。请不要要求在日本非法的服务。</p><p><strong>3. 服务性质：</strong>所有费用仅用于我们伴侣的时间和愉快陪伴。继续操作即表示您承认您没有为任何非法行为付费。</p>", legal_reminder_agreement: "点击“同意”，即表示您确认已阅读并理解这些条款。", confirm_btn: "同意", reject_btn: "拒绝", thank_you: "谢谢", rejection_text: "感谢您的关注。我们期待能再次为您服务。正在重定向...", welcome_back: "欢迎回来！", which_girl_title: "请问您有指定的女伴吗？", girl_name_placeholder: "请输入同伴的名字", not_sure_btn: "没有指定", submit_continue_btn: "提交并继续", form_success_text: "谢谢，我们已收到您的偏好。", form_success_subtitle: "请继续阅读法律声明。", continue_btn: "继续", services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔身体", "69", "按摩", "拥抱"], chat_header: "AI助手" },
-            'ko': { ai_prompt: "AI 어시스턴트", translator_prompt: "번역가", translator_header: "실시간 번역기", customer_speaker: "고객", staff_speaker: "직원", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "알겠습니다", legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다.</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. 서비스의 성격:</strong> 모든 요금은 저희 동반자의 시간과 즐거운 교제를 위한 것입니다. 계속 진행함으로써 귀하는 불법 행위에 대해 비용을 지불하지 않음을 인정하는 것입니다。</p>", legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", not_sure_btn: "특별히 없음", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다. 귀하의 선호 사항을 접수했습니다.", form_success_subtitle: "법적 고지를 확인해 주세요.", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "마사지", "껴안기"], chat_header: "AI 어시스턴트" },
-            'es': { ai_prompt: "Asistente de IA", translator_prompt: "Traductor", translator_header: "Traductor en Vivo", customer_speaker: "Cliente", staff_speaker: "Personal", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Entendido", legal_reminder_title_serious: "【Importante】Descargo de Responsabilidad y Términos de Uso", legal_reminder_text_serious: "<p><strong>1. Cumplimiento Legal:</strong> De acuerdo con la ley japonesa, cualquier forma de pago por relaciones sexuales está estrictamente prohibida. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del Cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. Por favor, no solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del Servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al continuar, usted reconoce que no está pagando por ningún acto ilegal.</p>", legal_reminder_agreement: "Al hacer clic en 'Aceptar', confirma que ha leído y entendido estos términos.", confirm_btn: "Aceptar", reject_btn: "Rechazar", thank_you: "Gracias", rejection_text: "Agradecemos su interés y esperamos verle en el futuro. Redirigiendo...", welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Tiene alguna acompañante en mente?", girl_name_placeholder: "Ingrese el nombre de la acompañante", not_sure_btn: "No estoy seguro", submit_continue_btn: "Enviar y Continuar", form_success_text: "Gracias, hemos recibido su preferencia.", form_success_subtitle: "Por favor, proceda al aviso legal.", continue_btn: "Continuar", services: ["Besos", "Masturbación Manual", "Lamer Testículos", "Sexo Oral", "Tocar", "Lamer Cuerpo", "69", "Masaje", "Abrazos"], chat_header: "Asistente de IA" },
-            'zh-tw': { ai_prompt: "AI助理", translator_prompt: "翻譯員", translator_header: "即時翻譯", customer_speaker: "顧客", staff_speaker: "員工", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "我明白了", legal_reminder_title_serious: "【重要】免責聲明與使用條款", legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根據日本法律，嚴禁為性交支付任何形式的報酬。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作：</strong>我們要求客戶合作以維護法律。請不要要求在日本非法的服務。</p><p><strong>3. 服務性質：</strong>所有費用僅用於我們伴侶的時間和愉快陪伴。繼續操作即表示您承認您沒有為任何非法行為付費。</p>", legal_reminder_agreement: "點擊「同意」，即表示您確認已閱讀並理解這些條款。", confirm_btn: "同意", reject_btn: "拒絕", thank_you: "謝謝", rejection_text: "感謝您的關注。我們期待能再次為您服務。正在重定向...", welcome_back: "歡迎回來！", which_girl_title: "請問您有指定的女伴嗎？", girl_name_placeholder: "請輸入同伴的名字", not_sure_btn: "沒有指定", submit_continue_btn: "提交並繼續", form_success_text: "謝謝，我們已收到您的偏好。", form_success_subtitle: "請繼續閱讀法律聲明。", continue_btn: "繼續", services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔身體", "69", "按摩", "擁抱"], chat_header: "AI助理" }
+            'en': { ai_prompt: "Ask any question", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "I Understand", legal_reminder_title_serious: "【Important】Disclaimer & Terms of Use", legal_reminder_text_serious: "<p><strong>1. Legal Compliance:</strong> In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. Our agency fully complies with all regulations.</p><p><strong>2. Client Cooperation:</strong> We require our clients' cooperation in upholding the law. Please do not request services that are illegal in Japan.</p><p><strong>3. Nature of Service:</strong> All fees are for our companion's time and pleasant company only. By proceeding, you acknowledge you are not paying for any illegal acts.</p>", legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", girl_name_placeholder: "Enter companion's name here", not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Massage", "Cuddling"], chat_header: "AI Assistant" },
+            'ja': { ai_prompt: "何でも聞いてください", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "確認しました", legal_reminder_title_serious: "【重要】免責事項と利用規約", legal_reminder_text_serious: "<p><strong>1. 法令遵守：</strong>日本の法律に従い、金銭による性的交渉は固く禁じられております。当店は関連法規をすべて遵守しております。</p><p><strong>2. お客様へのお願い：</strong>法律遵守のため、お客様のご協力をお願いいたします。日本で違法とされるサービスの要求はお控えください。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", legal_reminder_agreement: "「同意する」をクリックすることで、上記利用規約を読み、理解したことになります。", confirm_btn: "同意する", reject_btn: "拒否する", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、誠にありがとうございます。またの機会にご利用ください。リダイレクト中です...", welcome_back: "いつもご利用ありがとうございます！", which_girl_title: "ご指名のコンパニオンはいますか？", girl_name_placeholder: "コンパニオン名を入力してください", not_sure_btn: "特に指名なし", submit_continue_btn: "送信して続行", form_success_text: "ありがとうございます。ご希望を承りました。", form_success_subtitle: "利用規約の確認へお進みください。", continue_btn: "続ける", services: ["キス", "手コキ", "玉舐め", "フェラチオ", "タッチ", "ボディ舐め", "69", "マッサージ", "添い寝"], chat_header: "AIアシスタント" },
+            'zh': { ai_prompt: "有任何问题请提问", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "我明白了", legal_reminder_title_serious: "【重要】免责声明与使用条款", legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根据日本法律，严禁为性交支付任何形式的报酬。本机构完全遵守所有法规。</p><p><strong>2. 客户合作：</strong>我们要求客户合作以维护法律。请不要要求在日本非法的服务。</p><p><strong>3. 服务性质：</strong>所有费用仅用于我们伴侣的时间和愉快陪伴。继续操作即表示您承认您没有为任何非法行为付费。</p>", legal_reminder_agreement: "点击“同意”，即表示您确认已阅读并理解这些条款。", confirm_btn: "同意", reject_btn: "拒绝", thank_you: "谢谢", rejection_text: "感谢您的关注。我们期待能再次为您服务。正在重定向...", welcome_back: "欢迎回来！", which_girl_title: "请问您有指定的女伴吗？", girl_name_placeholder: "请输入同伴的名字", not_sure_btn: "没有指定", submit_continue_btn: "提交并继续", form_success_text: "谢谢，我们已收到您的偏好。", form_success_subtitle: "请继续阅读法律声明。", continue_btn: "继续", services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔身体", "69", "按摩", "拥抱"], chat_header: "AI助手" },
+            'ko': { ai_prompt: "무엇이든 물어보세요", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "알겠습니다", legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다.</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. 서비스의 성격:</strong> 모든 요금은 저희 동반자의 시간과 즐거운 교제를 위한 것입니다. 계속 진행함으로써 귀하는 불법 행위에 대해 비용을 지불하지 않음을 인정하는 것입니다。</p>", legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", not_sure_btn: "특별히 없음", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다. 귀하의 선호 사항을 접수했습니다.", form_success_subtitle: "법적 고지를 확인해 주세요.", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "마사지", "껴안기"], chat_header: "AI 어시스턴트" },
+            'es': { ai_prompt: "Haga cualquier pregunta", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Entendido", legal_reminder_title_serious: "【Importante】Descargo de Responsabilidad y Términos de Uso", legal_reminder_text_serious: "<p><strong>1. Cumplimiento Legal:</strong> De acuerdo con la ley japonesa, cualquier forma de pago por relaciones sexuales está estrictamente prohibida. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del Cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. Por favor, no solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del Servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al continuar, usted reconoce que no está pagando por ningún acto ilegal.</p>", legal_reminder_agreement: "Al hacer clic en 'Aceptar', confirma que ha leído y entendido estos términos.", confirm_btn: "Aceptar", reject_btn: "Rechazar", thank_you: "Gracias", rejection_text: "Agradecemos su interés y esperamos verle en el futuro. Redirigiendo...", welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Tiene alguna acompañante en mente?", girl_name_placeholder: "Ingrese el nombre de la acompañante", not_sure_btn: "No estoy seguro", submit_continue_btn: "Enviar y Continuar", form_success_text: "Gracias, hemos recibido su preferencia.", form_success_subtitle: "Por favor, proceda al aviso legal.", continue_btn: "Continuar", services: ["Besos", "Masturbación Manual", "Lamer Testículos", "Sexo Oral", "Tocar", "Lamer Cuerpo", "69", "Masaje", "Abrazos"], chat_header: "Asistente de IA" },
+            'zh-tw': { ai_prompt: "有任何問題請提問", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "我明白了", legal_reminder_title_serious: "【重要】免責聲明與使用條款", legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根據日本法律，嚴禁為性交支付任何形式的報酬。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作：</strong>我們要求客戶合作以維護法律。請不要要求在日本非法的服務。</p><p><strong>3. 服務性質：</strong>所有費用僅用於我們伴侶的時間和愉快陪伴。繼續操作即表示您承認您沒有為任何非法行為付費。</p>", legal_reminder_agreement: "點擊「同意」，即表示您確認已閱讀並理解這些條款。", confirm_btn: "同意", reject_btn: "拒絕", thank_you: "謝謝", rejection_text: "感謝您的關注。我們期待能再次為您服務。正在重定向...", welcome_back: "歡迎回來！", which_girl_title: "請問您有指定的女伴嗎？", girl_name_placeholder: "請輸入同伴的名字", not_sure_btn: "沒有指定", submit_continue_btn: "提交並繼續", form_success_text: "謝謝，我們已收到您的偏好。", form_success_subtitle: "請繼續閱讀法律聲明。", continue_btn: "繼續", services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔身體", "69", "按摩", "擁抱"], chat_header: "AI助理" }
         };
         const languageOptions = [ { code: 'en', name: "English" }, { code: 'ja', name: "日本語 (Japanese)" }, { code: 'zh', name: "中文 (简体)" }, { code: 'ko', name: "한국어 (Korean)" }, { code: 'es', name: "Español (Spanish)" }, { code: 'zh-tw', name: "中文 (繁體 - 廣東話/台灣話)" } ];
 
         // --- UI & CORE LOGIC ---
         const aiChatMessages = document.getElementById('ai-chat-messages');
-        const translationChatMessages = document.getElementById('translation-chat-messages');
         const aiConversationPanel = document.getElementById('conversation-panel');
-        const translationConversationPanel = document.getElementById('translation-panel');
         const bigMicBtn = document.getElementById('big-mic');
-        const translateBtn = document.getElementById('translate-btn');
         const voiceOverlay = document.getElementById('voice-overlay');
         const stopRecordingBtn = document.getElementById('stop-recording-btn');
         let audioContext, analyser, dataArray, source, rafId;
@@ -330,7 +309,6 @@
         // --- CONVERSATION & VOICE ---
         function closeAllPanels() {
             aiConversationPanel.style.display = 'none';
-            translationConversationPanel.style.display = 'none';
         }
         function addChatMessage(message, sender, panel) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; panel.appendChild(msgDiv); panel.scrollTop = panel.scrollHeight; return msgDiv; }
         function addTypingIndicator(panel) { const wrap = document.createElement('div'); wrap.className = 'typing'; wrap.innerHTML = `<span>.</span><span>.</span><span>.</span>`; panel.appendChild(wrap); panel.scrollTop = panel.scrollHeight; return wrap; }
@@ -425,9 +403,8 @@
         async function startRecording() {
             if (isRecording) return;
             
-            const panel = document.getElementById(currentChatMode === 'ai' ? 'conversation-panel' : 'translation-panel');
             closeAllPanels();
-            panel.style.display = 'flex';
+            aiConversationPanel.style.display = 'flex';
             
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -437,12 +414,11 @@
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
                 isRecording = true;
-                document.getElementById(currentChatMode === 'ai' ? 'big-mic' : 'translate-btn').classList.add('recording');
+                bigMicBtn.classList.add('recording');
                 mediaRecorder.addEventListener("dataavailable", (event) => { if (event.data?.size) audioChunks.push(event.data); });
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    if(currentChatMode === 'ai') sendAudioToWebhook(audioBlob);
-                    else sendAudioForTranslation(audioBlob);
+                    sendAudioToWebhook(audioBlob);
                     stream.getTracks().forEach(track => track.stop());
                 });
             } catch (err) { alert("Microphone access is required. Please allow access and try again."); }
@@ -453,8 +429,7 @@
             isRecording = false;
             
             voiceOverlay.style.display = 'none';
-            document.getElementById('big-mic').classList.remove('recording');
-            document.getElementById('translate-btn').classList.remove('recording');
+            bigMicBtn.classList.remove('recording');
 
             if (rafId) cancelAnimationFrame(rafId);
             rafId = null;
@@ -498,28 +473,11 @@
                 showPage('page-first-time'); 
             });
             bigMicBtn.addEventListener('click', () => {
-                currentChatMode = 'ai';
-                toggleRecording();
-            });
-            translateBtn.addEventListener('click', () => {
-                currentChatMode = 'translation';
                 toggleRecording();
             });
             stopRecordingBtn.addEventListener('click', stopRecording);
             
-            document.getElementById('speaker-customer').addEventListener('click', () => {
-                currentSpeaker = 'customer';
-                document.getElementById('speaker-customer').classList.add('active');
-                document.getElementById('speaker-staff').classList.remove('active');
-            });
-            document.getElementById('speaker-staff').addEventListener('click', () => {
-                currentSpeaker = 'staff';
-                document.getElementById('speaker-staff').classList.add('active');
-                document.getElementById('speaker-customer').classList.remove('active');
-            });
-
             makeDraggable(document.getElementById('conversation-panel'), document.querySelector('#conversation-panel .panel-header'));
-            makeDraggable(document.getElementById('translation-panel'), document.querySelector('#translation-panel .panel-header'));
         }
         document.addEventListener('DOMContentLoaded', init);
     </script>
