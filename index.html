@@ -6,6 +6,7 @@
     <title>Tokyo Girls Hub - Welcome</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         :root{
             --pink: #EC4899;
@@ -19,51 +20,153 @@
         }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fbcfe8 100%);
             color: #374151;
             margin: 0;
+            overflow-y: auto; 
+            min-height: 100%;
+            position: relative;
+            overflow-x: hidden;
+            background-color: #fce7f3; /* Fallback color */
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #fee2e2, #fef3c7, #dbeafe, #e9d5ff, #fbcfe8);
+            background-size: 400% 400%;
+            animation: moveGradient 45s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 100% 100%; }
+            50% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        .bubbles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -150px;
+            border-radius: 50%;
+            animation: rise 25s infinite ease-in;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-y: auto; /* Enable vertical scrolling */
-            min-height: 100%;
         }
+        
+        .bubble.circle {
+             background-color: rgba(255, 255, 255, 0.35);
+             box-shadow: 0 0 10px rgba(255,255,255,0.7);
+        }
+
+        .bubble.silhouette svg {
+            width: 100%;
+            height: 100%;
+            fill: rgba(255, 255, 255, 0.3);
+            filter: blur(1px);
+        }
+
+
+        @keyframes rise {
+          0% {
+            transform: translateY(0) scale(1);
+            opacity: 0.7;
+          }
+          90% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(-120vh) scale(0.3);
+            opacity: 0;
+          }
+        }
+
+        #app-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+        }
+
         .page-content { display: none; }
-        .page-content.active { display: flex; justify-content: center; }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .page-content.active {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
 
         .card {
             position: relative;
-            background-color: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(236, 72, 153, 0.18);
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-top-color: rgba(255, 255, 255, 0.6);
+            border-left-color: rgba(255, 255, 255, 0.6);
             border-radius: 1.25rem;
-            padding: 3rem;
-            box-shadow: 0 20px 40px -20px rgba(236, 72, 153, 0.25), 0 10px 24px -18px rgba(0,0,0,.1);
+            padding: 2.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1), 0 10px 24px -18px rgba(0,0,0,.1);
             width: 100%;
             max-width: 896px;
             transition: transform .3s ease, box-shadow .3s ease;
+            z-index: 1;
+            /* overflow: hidden; <- This was the cause of the issue */
         }
         
         .btn {
             display: inline-flex; align-items:center; justify-content:center; gap:.5rem;
             padding: 1rem 1.75rem;
             border-radius: 0.9rem; font-weight: 600;
-            transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease;
+            transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
             cursor: pointer; border: 1px solid transparent; text-align: center;
         }
         .btn-primary { background-color: var(--pink); color: white; }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(236,72,153,.35); }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+        }
         .btn-secondary { background-color: #fff; color: var(--rose-700); border-color: var(--pink-200); }
         .btn-secondary:hover { background-color: var(--pink-100); }
+        .btn .btn-icon { transition: transform 0.2s ease-in-out; }
+        .btn:hover .btn-icon { transform: translateX(4px); }
         
         .logo { font-size: clamp(2.25rem, 5vw, 3rem); font-weight: 800; color: var(--pink); text-align: center; margin-bottom: 0.5rem; }
         .page-title { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; text-align: center; margin-bottom: 2rem; }
         
         .service-card {
+            position: relative;
+            overflow: hidden;
             background: linear-gradient(180deg,#fff,rgba(255,255,255,.9));
             border: 1px solid rgba(236,72,153,.2);
             border-radius: 0.9rem;
-            overflow: hidden;
             text-align: center;
             color: var(--rose-700);
             font-weight: 600;
@@ -84,9 +187,48 @@
             padding: 1.25rem;
         }
 
+        .pricing-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -10px rgba(236, 72, 153, 0.2);
+        }
+        #page-pricing .grid > div:nth-child(1) { background: linear-gradient(145deg, #fff, #fef2f2); }
+        #page-pricing .grid > div:nth-child(2) { background: linear-gradient(145deg, #fff, #f5f3ff); }
+        #page-pricing .grid > div:nth-child(3) { background: linear-gradient(145deg, #fff, #ecfeff); }
+        
+        .pricing-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        .pricing-card .duration {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+            color: var(--rose-700);
+        }
+        .pricing-card .price .currency {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
         .back-button { position: absolute; top: 1rem; left: 1rem; background: white; border: 1px solid #f3f4f6; cursor: pointer; color: #6b7280; font-weight: 700; font-size: 1.2rem; line-height: 1; width:36px; height:36px; border-radius:.75rem; display:flex;align-items:center;justify-content:center; z-index: 10; }
         
-        #conversation-panel, #translation-panel {
+        #conversation-panel {
             position: fixed; right: 2rem; bottom: 10rem; width: 380px; max-width: 92vw; height: 560px;
             background: #fff; border:1px solid rgba(0,0,0,.1); border-radius:1.25rem;
             box-shadow: 0 24px 48px -24px rgba(0,0,0,.2);
@@ -101,8 +243,7 @@
         .chat-messages{ flex:1; padding: 1rem; overflow-y:auto; display:flex; flex-direction:column; gap:.6rem; background: linear-gradient(180deg, #fff, #f9fafb 60%, #fff); }
         .chat-message { max-width: 84%; padding: 0.55rem 0.75rem; border-radius: 0.9rem; line-height: 1.4; font-size:.98rem; white-space: pre-wrap; }
         .user-message { background-color: var(--pink); color: white; align-self: flex-end; border-bottom-right-radius: 0.3rem; }
-        .ai-message, .staff-message, .translation-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
-        .translation-message { border: 1px dashed #d1d5db; color: #6b7280; font-style: italic;}
+        .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
         .typing { align-self: flex-start; background-color: #f3f4f6; color: #374151; border-bottom-left-radius: 0.3rem; display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 0.75rem; border-radius: 0.9rem; max-width: 84%; }
         
         #voice-controls {
@@ -139,8 +280,6 @@
         }
         #big-mic { background: var(--pink); }
         #big-mic.recording{ background: var(--pink); transform: scale(1.1); }
-        #translate-btn { background-color: var(--violet); }
-        #translate-btn.recording { background: #7c3aed; transform: scale(1.1); }
         .ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid; animation: ringPulse 1.6s ease-out infinite; }
         .ring.delay { animation-delay: .35s; opacity:.6; }
         @keyframes ringPulse { 0% { transform: scale(.9); opacity:.9; } 100% { transform: scale(1.15); opacity:0; } }
@@ -149,11 +288,6 @@
         #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(0,0,0,.3); }
         #stop-recording-btn { margin-top: 1.2rem; background: #fff; color: var(--pink); border: 2px solid var(--pink-200); width: 110px; height: 48px; border-radius: 9999px; font-size: .95rem; font-weight: 700; cursor: pointer; }
         
-        .speaker-toggle { display: flex; background: #e5e7eb; border-radius: .75rem; padding: .25rem; }
-        .speaker-toggle button { flex: 1; padding: .5rem; border-radius: .5rem; border: none; background: transparent; font-weight: 600; color: #6b7280; transition: background-color .2s ease, color .2s ease;}
-        .speaker-toggle button.active { background: white; color: var(--violet); box-shadow: 0 2px 4px rgba(0,0,0,.1); }
-        
-        /* Custom Dropdown Fix */
         .custom-select-container { position: relative; }
         .custom-select-options {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -164,14 +298,63 @@
         
         .panel.dragging { user-select: none; transition: none !important; }
 
+        /* Shine Animation */
+        @keyframes shine {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            transform: translateX(-100%);
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(100deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 80%);
+            pointer-events: none;
+            animation: shine 10s ease-in-out infinite;
+            border-radius: 1.25rem;
+        }
+
     </style>
 </head>
 <body>
-
+    <div class="bubbles-container"></div>
     <div id="app-container" class="w-full flex flex-col items-center p-4">
-        <div id="page-language" class="page-content active"><div class="card"><h1 class="logo">Tokyo Girls Hub</h1><h2 class="page-title" data-translate-key="select_language_title">Select Your Language</h2><div class="flex flex-col space-y-4 max-w-md mx-auto"><div id="custom-language-select" class="custom-select-container"><button id="language-select-button" type="button" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-center text-lg flex justify-between items-center"><span id="selected-language-name">Select Language</span><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.53.22l3.5 3.5a.75.75 0 01-1.06 1.06L10 4.81 7.03 7.78a.75.75 0 01-1.06-1.06l3.5-3.5A.75.75 0 0110 3zm-3.72 9.53a.75.75 0 011.06 0L10 15.19l2.97-2.97a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg></button><div id="language-options" class="custom-select-options hidden"><input type="text" id="language-search" class="w-full p-3 border-b border-pink-100 focus:outline-none focus:ring-1 focus:ring-pink-400" data-translate-key="search_placeholder" placeholder="Search language..."><ul id="language-list" class="py-1"></ul></div></div><button id="language-continue-btn" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div></div>
+        <div id="page-language" class="page-content active"><div class="card"><h1 class="logo">Tokyo Girls Hub</h1><h2 class="page-title" data-translate-key="select_language_title">Select Your Language</h2><div class="flex flex-col space-y-4 max-w-md mx-auto"><div id="custom-language-select" class="custom-select-container"><button id="language-select-button" type="button" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-center text-lg flex justify-between items-center"><span id="selected-language-name">Select Language</span><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75
+ 0 01.53.22l3.5 3.5a.75.75 0 01-1.06 1.06L10 4.81 7.03 7.78a.75.75 0 01-1.06-1.06l3.5-3.5A.75.75 0 0110 3zm-3.72 9.53a.75.75 0 011.06 0L10 15.19l2.97-2.97a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg></button><div id="language-options" class="custom-select-options hidden"><input type="text" id="language-search" class="w-full p-3 border-b border-pink-100 focus:outline-none focus:ring-1 focus:ring-pink-400" data-translate-key="search_placeholder" placeholder="Search language..."><ul id="language-list" class="py-1"></ul></div></div><button id="language-continue-btn" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div></div>
         <div id="page-first-time" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="welcome">Welcome</h1><h2 class="page-title" data-translate-key="first_time_title">Is this your first time visiting us?</h2><div class="flex justify-center gap-4"><button onclick="showPage('page-services')" class="btn btn-primary w-2/5 text-lg" data-translate-key="yes_btn">Yes</button><button onclick="showPage('page-which-girl')" class="btn btn-secondary w-2/5 text-lg" data-translate-key="no_btn">No</button></div></div></div>
-        <div id="page-services" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="our_services_title">Our Services</h1><p class="text-center mb-6 text-lg" data-translate-key="our_services_subtitle">We are a legally registered agency. We offer the following services:</p><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8"></div><div class="text-center"><button onclick="showPage('page-disclaimer-yes')" class="btn btn-primary text-lg" data-translate-key="ok_btn">OK</button></div></div></div>
+        <div id="page-services" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="our_services_title">Our Services</h1><p class="text-center mb-6 text-lg" data-translate-key="our_services_subtitle">We are a legally registered agency. We offer the following services:</p><div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8"></div><div class="text-center"><button onclick="showPage('page-pricing')" class="btn btn-primary text-lg" data-translate-key="ok_btn">OK</button></div></div></div>
+        
+        <div id="page-pricing" class="page-content">
+            <div class="card">
+                <button onclick="goBack()" class="back-button">‹</button>
+                <h1 class="logo" data-translate-key="pricing_title">Our Pricing</h1>
+                <p class="text-center mb-8 text-lg text-gray-600" data-translate-key="pricing_subtitle">Simple and transparent pricing for our companionship services.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="pricing-card">
+                        <div class="icon">✨</div>
+                        <div class="duration" data-translate-key="duration_60">60 Minutes</div>
+                        <div class="price"><span class="currency">¥</span>30,000</div>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="icon">🌟</div>
+                        <div class="duration" data-translate-key="duration_90">90 Minutes</div>
+                        <div class="price"><span class="currency">¥</span>40,000</div>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="icon">💎</div>
+                        <div class="duration" data-translate-key="duration_120">120 Minutes</div>
+                        <div class="price"><span class="currency">¥</span>50,000</div>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <button onclick="showPage('page-disclaimer-yes')" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button>
+                </div>
+            </div>
+        </div>
+        
         <div id="page-disclaimer-yes" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><svg class="mx-auto h-16 w-16 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><h3 class="text-2xl font-bold text-gray-800 mt-4" data-translate-key="legal_reminder_title_serious">【Important】Disclaimer & Terms of Use</h3><div class="mt-4 text-left space-y-3 text-gray-600 text-base" data-translate-key="legal_reminder_text_serious"></div><p class="mt-6 text-gray-800 font-semibold" data-translate-key="legal_reminder_agreement"></p><div class="flex justify-center gap-4 mt-6"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5 text-lg" data-translate-key="confirm_btn">Agree</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5 text-lg" data-translate-key="reject_btn">Decline</button></div></div></div>
         <div id="page-rejected" class="page-content"><div class="card text-center"><h1 class="logo" data-translate-key="thank_you">Thank You</h1><p class="text-xl" data-translate-key="rejection_text">Thanks for your interest. We hope to see you again. Redirecting...</p></div></div>
         <div id="page-which-girl" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="welcome_back">Welcome Back!</h1><h2 class="page-title" data-translate-key="which_girl_title">Do you remember your companion's name?</h2><form id="girl-nomination-form" class="max-w-md mx-auto"><div class="flex flex-col space-y-4"><input type="text" name="girl_name" data-translate-key="girl_name_placeholder" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-lg"><button type="submit" class="btn btn-primary text-lg" data-translate-key="submit_continue_btn">Submit & Continue</button><button type="button" id="not-sure-btn" class="btn btn-secondary text-lg" data-translate-key="not_sure_btn">I'm Not Sure</button></div></form></div></div>
@@ -214,12 +397,102 @@
 
         // --- TRANSLATION DATA ---
         const translations = {
-            'en': { ai_prompt: "Ask any question", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "I Understand", legal_reminder_title_serious: "【Important】Disclaimer & Terms of Use", legal_reminder_text_serious: "<p><strong>1. Legal Compliance:</strong> In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. Our agency fully complies with all regulations.</p><p><strong>2. Client Cooperation:</strong> We require our clients' cooperation in upholding the law. Please do not request services that are illegal in Japan.</p><p><strong>3. Nature of Service:</strong> All fees are for our companion's time and pleasant company only. By proceeding, you acknowledge you are not paying for any illegal acts.</p>", legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", girl_name_placeholder: "Enter companion's name here", not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Oral", "Cuddling", "Add-Ons (extra charge)"], chat_header: "AI Assistant", error_speak_again: "An error occurred. Please speak into the mic again." },
-            'ja': { ai_prompt: "何でも聞いてください", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "確認しました", legal_reminder_title_serious: "【重要】免責事項と利用規約", legal_reminder_text_serious: "<p><strong>1. 法令遵守：</strong>日本の法律に従い、金銭による性的交渉は固く禁じられております。当店は関連法規をすべて遵守しております。</p><p><strong>2. お客様へのお願い：</strong>法律遵守のため、お客様のご協力をお願いいたします。日本で違法とされるサービスの要求はお控えください。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", legal_reminder_agreement: "「同意する」をクリックすることで、上記利用規約を読み、理解したことになります。", confirm_btn: "同意する", reject_btn: "拒否する", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、誠にありがとうございます。またの機会にご利用ください。リダイレクト中です...", welcome_back: "いつもご利用ありがとうございます！", which_girl_title: "ご指名のコンパニオンはいますか？", girl_name_placeholder: "コンパニオン名を入力してください", not_sure_btn: "特に指名なし", submit_continue_btn: "送信して続行", form_success_text: "ありがとうございます。ご希望を承りました。", form_success_subtitle: "利用規約の確認へお進みください。", continue_btn: "続ける", services: ["キス", "手コキ", "玉舐め", "フェラチオ", "タッチ", "ボディ舐め", "69", "オーラル", "添い寝", "追加オプション（別料金）"], chat_header: "AIアシスタント", error_speak_again: "エラーが発生しました。もう一度マイクに向かってお話しください。" },
-            'zh': { ai_prompt: "有任何问题请提问", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "我明白了", legal_reminder_title_serious: "【重要】免責声明与使用条款", legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根据日本法律，严禁为性交支付任何形式的报酬。本机构完全遵守所有法规。</p><p><strong>2. 客户合作：</strong>我们要求客户合作以维护法律。请不要要求在日本非法的服务。</p><p><strong>3. 服务性质：</strong>所有费用仅用于我们伴侣的时间和愉快陪伴。继续操作即表示您承认您没有为任何非法行为付费。</p>", legal_reminder_agreement: "点击“同意”，即表示您确认已阅读并理解这些条款。", confirm_btn: "同意", reject_btn: "拒绝", thank_you: "谢谢", rejection_text: "感谢您的关注。我们期待能再次为您服务。正在重定向...", welcome_back: "欢迎回来！", which_girl_title: "请问您有指定的女伴吗？", girl_name_placeholder: "请输入同伴的名字", not_sure_btn: "没有指定", submit_continue_btn: "提交并继续", form_success_text: "谢谢，我们已收到您的偏好。", form_success_subtitle: "请继续阅读法律声明。", continue_btn: "继续", services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔身体", "69", "口部服务", "拥抱", "附加项目（额外收费）"], chat_header: "AI助手", error_speak_again: "发生错误，请再对麦克风说一次。" },
-            'ko': { ai_prompt: "무엇이든 물어보세요", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "알겠습니다", legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. 서비스의 성격:</strong> 모든 요금은 저희 동반자의 시간과 즐거운 교제를 위한 것입니다. 계속 진행함으로써 귀하는 불법 행위에 대해 비용을 지불하지 않음을 인정하는 것입니다。</p>", legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", not_sure_btn: "특별히 없음", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다. 귀하의 선호 사항을 접수했습니다.", form_success_subtitle: "법적 고지를 확인해 주세요.", continue_btn: "계속", services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "오랄", "껴안기", "추가 옵션 (추가 요금)"], chat_header: "AI 어시스턴트", error_speak_again: "오류가 발생했습니다. 마이크에 다시 말씀해주세요。" },
-            'es': { ai_prompt: "Haga cualquier pregunta", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Entendido", legal_reminder_title_serious: "【Importante】Descargo de Responsabilidad y Términos de Uso", legal_reminder_text_serious: "<p><strong>1. Cumplimiento Legal:</strong> De acuerdo con la ley japonesa, cualquier forma de pago por relaciones sexuales está estrictamente prohibida. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del Cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. Por favor, no solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del Servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al continuar, usted reconoce que no está pagando por ningún acto ilegal.</p>", legal_reminder_agreement: "Al hacer clic en 'Aceptar', confirma que ha leído y entendido estos términos.", confirm_btn: "Aceptar", reject_btn: "Rechazar", thank_you: "Gracias", rejection_text: "Agradecemos su interés y esperamos verle en el futuro. Redirigiendo...", welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Tiene alguna acompañante en mente?", girl_name_placeholder: "Ingrese el nombre de la acompañante", not_sure_btn: "No estoy seguro", submit_continue_btn: "Enviar y Continuar", form_success_text: "Gracias, hemos recibido su preferencia.", form_success_subtitle: "Por favor, proceda al aviso legal.", continue_btn: "Continuar", services: ["Besos", "Masturbación Manual", "Lamer Testículos", "Sexo Oral", "Tocar", "Lamer Cuerpo", "69", "Oral", "Abrazos", "Servicios Adicionales (cargo extra)"], chat_header: "Asistente de IA", error_speak_again: "Ocurrió un error. Por favor, hable de nuevo al micrófono." },
-            'zh-tw': { ai_prompt: "有任何問題請提問", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "我明白了", legal_reminder_title_serious: "【重要】免責聲明與使用條款", legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根據日本法律，嚴禁為性交支付任何形式的報酬。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作：</strong>我們要求客戶合作以維護法律。請不要要求在日本非法的服務。</p><p><strong>3. 服務性質：</strong>所有費用僅用於我們伴侶的時間和愉快陪伴。繼續操作即表示您承認您沒有為任何非法行為付費。</p>", legal_reminder_agreement: "點擊「同意」，即表示您確認已閱讀並理解這些條款。", confirm_btn: "同意", reject_btn: "拒絕", thank_you: "謝謝", rejection_text: "感謝您的關注。我們期待能再次為您服務。正在重定向...", welcome_back: "歡迎回來！", which_girl_title: "請問您有指定的女伴嗎？", girl_name_placeholder: "請輸入同伴的名字", not_sure_btn: "沒有指定", submit_continue_btn: "提交並繼續", form_success_text: "謝謝，我們已收到您的偏好。", form_success_subtitle: "請繼續閱讀法律聲明。", continue_btn: "繼續", services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔身體", "69", "口部服務", "擁抱", "附加項目（額外收費）"], chat_header: "AI助理", error_speak_again: "發生錯誤，請再對麥克風說一次。" }
+            'en': { 
+                ai_prompt: "Ask any question", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", 
+                welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", 
+                our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "View Pricing", 
+                pricing_title: "Our Pricing", pricing_subtitle: "Simple and transparent pricing for our companionship services.", 
+                duration_60: "60 Minutes", duration_90: "90 Minutes", duration_120: "120 Minutes",
+                legal_reminder_title_serious: "【Important】Disclaimer & Terms of Use", 
+                legal_reminder_text_serious: "<p><strong>1. Legal Compliance:</strong> In accordance with Japanese law, any form of payment for sexual intercourse is strictly prohibited. Our agency fully complies with all regulations.</p><p><strong>2. Client Cooperation:</strong> We require our clients' cooperation in upholding the law. Please do not request services that are illegal in Japan.</p><p><strong>3. Nature of Service:</strong> All fees are for our companion's time and pleasant company only. By proceeding, you acknowledge you are not paying for any illegal acts.</p>", 
+                legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", 
+                confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", 
+                welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", girl_name_placeholder: "Enter companion's name here", 
+                not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", 
+                form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", 
+                services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Oral", "Cuddling", "Add-Ons (extra charge)"], 
+                chat_header: "AI Assistant", error_speak_again: "An error occurred. Please speak into the mic again." 
+            },
+            'ja': { 
+                ai_prompt: "何でも聞いてください", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", 
+                welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", 
+                our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "料金を見る", 
+                pricing_title: "料金プラン", pricing_subtitle: "明確でシンプルなコンパニオンサービスの料金プランです。",
+                duration_60: "60分", duration_90: "90分", duration_120: "120分",
+                legal_reminder_title_serious: "【重要】免責事項と利用規約", 
+                legal_reminder_text_serious: "<p><strong>1. 法令遵守：</strong>日本の法律に従い、金銭による性的交渉は固く禁じられております。当店は関連法規をすべて遵守しております。</p><p><strong>2. お客様へのお願い：</strong>法律遵守のため、お客様のご協力をお願いいたします。日本で違法とされるサービスの要求はお控えください。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_agreement: "「同意する」をクリックすることで、上記利用規約を読み、理解したことになります。", 
+                confirm_btn: "同意する", reject_btn: "拒否する", thank_you: "ありがとうございます", rejection_text: "ご関心をお寄せいただき、誠にありがとうございます。またの機会にご利用ください。リダイレクト中です...", 
+                welcome_back: "いつもご利用ありがとうございます！", which_girl_title: "ご指名のコンパニオンはいますか？", girl_name_placeholder: "コンパニオン名を入力してください", 
+                not_sure_btn: "特に指名なし", submit_continue_btn: "送信して続行", form_success_text: "ありがとうございます。ご希望を承りました。", 
+                form_success_subtitle: "利用規約の確認へお進みください。", continue_btn: "続ける", 
+                services: ["キス", "手コキ", "玉舐め", "フェラチオ", "タッチ", "ボディ舐め", "69", "オーラル", "添い寝", "追加オプション（別料金）"], 
+                chat_header: "AIアシスタント", error_speak_again: "エラーが発生しました。もう一度マイクに向かってお話しください。" 
+            },
+            'zh': { 
+                ai_prompt: "有任何问题请提问", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", 
+                welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", 
+                our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "查看价格", 
+                pricing_title: "我们的价格", pricing_subtitle: "我们伴游服务的价格简单透明。",
+                duration_60: "60分钟", duration_90: "90分钟", duration_120: "120分钟",
+                legal_reminder_title_serious: "【重要】免責声明与使用条款", 
+                legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根据日本法律，严禁为性交支付任何形式的报酬。本机构完全遵守所有法规。</p><p><strong>2. 客户合作：</strong>我们要求客户合作以维护法律。请不要要求在日本非法的服务。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_agreement: "点击“同意”，即表示您确认已阅读并理解这些条款。", 
+                confirm_btn: "同意", reject_btn: "拒绝", thank_you: "谢谢", rejection_text: "感谢您的关注。我们期待能再次为您服务。正在重定向...", 
+                welcome_back: "欢迎回来！", which_girl_title: "请问您有指定的女伴吗？", girl_name_placeholder: "请输入同伴的名字", 
+                not_sure_btn: "没有指定", submit_continue_btn: "提交并继续", form_success_text: "谢谢，我们已收到您的偏好。", 
+                form_success_subtitle: "请继续阅读法律声明。", continue_btn: "继续", 
+                services: ["接吻", "手交", "舔蛋", "口交", "触摸", "舔身体", "69", "口部服务", "拥抱", "附加项目（额外收费）"], 
+                chat_header: "AI助手", error_speak_again: "发生错误，请再对麦克风说一次。" 
+            },
+            'ko': { 
+                ai_prompt: "무엇이든 물어보세요", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", 
+                welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", 
+                our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "가격 보기", 
+                pricing_title: "요금 안내", pricing_subtitle: "간단하고 투명한 저희 동반 서비스 요금입니다。",
+                duration_60: "60분", duration_90: "90분", duration_120: "120분",
+                legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", 
+                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", 
+                confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", 
+                welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", 
+                not_sure_btn: "특별히 없음", submit_continue_btn: "제출하고 계속하기", form_success_text: "감사합니다. 귀하의 선호 사항을 접수했습니다.", 
+                form_success_subtitle: "법적 고지를 확인해 주세요.", continue_btn: "계속", 
+                services: ["키스", "핸드잡", "볼 핥기", "블로우잡", "터치", "바디 핥기", "69", "오랄", "껴안기", "추가 옵션 (추가 요금)"], 
+                chat_header: "AI 어시스턴트", error_speak_again: "오류가 발생했습니다. 마이크에 다시 말씀해주세요。" 
+            },
+            'es': { 
+                ai_prompt: "Haga cualquier pregunta", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", 
+                welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", 
+                our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Ver Precios", 
+                pricing_title: "Nuestros Precios", pricing_subtitle: "Precios simples y transparentes para nuestros servicios de acompañamiento.",
+                duration_60: "60 Minutos", duration_90: "90 Minutos", duration_120: "120 Minutos",
+                legal_reminder_title_serious: "【Importante】Descargo de Responsabilidad y Términos de Uso", 
+                legal_reminder_text_serious: "<p><strong>1. Cumplimiento Legal:</strong> De acuerdo con la ley japonesa, cualquier forma de pago por relaciones sexuales está strictly prohibited. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del Cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. Por favor, no solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del Servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al continuar, usted reconoce que no está pagando por ningún acto ilegal.</p>", 
+                legal_reminder_agreement: "Al hacer clic en 'Aceptar', confirma que ha leído y entendido estos términos.", 
+                confirm_btn: "Aceptar", reject_btn: "Rechazar", thank_you: "Gracias", rejection_text: "Agradecemos su interés y esperamos verle en el futuro. Redirigiendo...", 
+                welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Tiene alguna acompañante en mente?", girl_name_placeholder: "Ingrese el nombre de la acompañante", 
+                not_sure_btn: "No estoy seguro", submit_continue_btn: "Enviar y Continuar", form_success_text: "Gracias, hemos recibido su preferencia.", 
+                form_success_subtitle: "Por favor, proceda al aviso legal.", continue_btn: "Continuar", 
+                services: ["Besos", "Masturbación Manual", "Lamer Testículos", "Sexo Oral", "Tocar", "Lamer Cuerpo", "69", "Oral", "Abrazos", "Servicios Adicionales (cargo extra)"], 
+                chat_header: "Asistente de IA", error_speak_again: "Ocurrió un error. Por favor, hable de nuevo al micrófono." 
+            },
+            'zh-tw': { 
+                ai_prompt: "有任何問題請提問", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", 
+                welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", 
+                our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "查看價格", 
+                pricing_title: "我們的價格", pricing_subtitle: "我們伴遊服務的價格簡單透明。",
+                duration_60: "60分鐘", duration_90: "90分鐘", duration_120: "120分鐘",
+                legal_reminder_title_serious: "【重要】免責聲明與使用條款", 
+                legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根據日本法律，嚴禁為性交支付任何形式的報酬。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作：</strong>我們要求客戶合作以維護法律。請不要要求在日本非法的服務。</p><p><strong>3. 服務性質：</strong>所有費用僅用於我們伴侶的時間和愉快陪伴。繼續操作即表示您承認您沒有為任何非法行為付費。</p>", 
+                legal_reminder_agreement: "點擊「同意」，即表示您確認已閱讀並理解這些條款。", 
+                confirm_btn: "同意", reject_btn: "拒絕", thank_you: "謝謝", rejection_text: "感謝您的關注。我們期待能再次為您服務。正在重定向...", 
+                welcome_back: "歡迎回來！", which_girl_title: "請問您有指定的女伴嗎？", girl_name_placeholder: "請輸入同伴的名字", 
+                not_sure_btn: "沒有指定", submit_continue_btn: "提交並繼續", form_success_text: "謝謝，我們已收到您的偏好。", 
+                form_success_subtitle: "請繼續閱讀法律聲明。", continue_btn: "繼續", 
+                services: ["接吻", "手交", "舔蛋", "口交", "觸摸", "舔身體", "69", "口部服務", "擁抱", "附加項目（額外收費）"], 
+                chat_header: "AI助理", error_speak_again: "發生錯誤，請再對麥克風說一次。" 
+            }
         };
         const languageOptions = [ { code: 'en', name: "English" }, { code: 'ja', name: "日本語 (Japanese)" }, { code: 'zh', name: "中文 (简体)" }, { code: 'ko', name: "한국어 (Korean)" }, { code: 'es', name: "Español (Spanish)" }, { code: 'zh-tw', name: "中文 (繁體 - 廣東話/台灣話)" } ];
 
@@ -231,7 +504,35 @@
         const stopRecordingBtn = document.getElementById('stop-recording-btn');
         let audioContext, analyser, dataArray, source, rafId;
 
-        function updateText() { const langPack = translations[currentLanguage] || translations['en']; document.querySelectorAll('[data-translate-key]').forEach(el => { const key = el.getAttribute('data-translate-key'); if (langPack[key]) { if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = langPack[key]; } else { el.innerHTML = langPack[key]; } } }); populateServices(); }
+        function updateText() { 
+            const langPack = translations[currentLanguage] || translations['en']; 
+            document.querySelectorAll('[data-translate-key]').forEach(el => { 
+                const key = el.getAttribute('data-translate-key'); 
+                if (langPack[key]) { 
+                    const originalHTML = el.innerHTML;
+                    const textNode = [...el.childNodes].find(node => node.nodeType === 3 && node.textContent.trim().length > 0);
+                    
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { 
+                        el.placeholder = langPack[key]; 
+                    } else { 
+                        if(textNode) {
+                            textNode.textContent = langPack[key];
+                        } else {
+                            el.innerHTML = langPack[key];
+                        }
+                    }
+
+                    const arrowKeys = ['continue_btn', 'ok_btn', 'confirm_btn', 'submit_continue_btn'];
+                    if (el.tagName === 'BUTTON' && arrowKeys.includes(key)) {
+                        if (!el.querySelector('.btn-icon')) {
+                             el.insertAdjacentHTML('beforeend', ' <span class="btn-icon ml-2">&rarr;</span>');
+                        }
+                    }
+                } 
+            }); 
+            populateServices(); 
+        }
+
         function populateLanguages(filter = '') {
             const list = document.getElementById('language-list');
             list.innerHTML = '';
@@ -465,8 +766,36 @@
         async function toggleRecording() { isRecording ? stopRecording() : await startRecording(); }
 
         // --- INITIALIZATION ---
+        function createBubbles() {
+            const container = document.querySelector('.bubbles-container');
+            if (!container) return;
+            const bubbleCount = 40;
+            const girlSilhouette = `<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg"><path d="M88.7,28.6c-0.2-1.3-0.5-2.6-1-3.8c-1.4-3.6-4.1-6.5-7.7-7.9c-2.3-0.9-4.8-1.2-7.3-1c-5.2,0.4-10,3.3-12.8,7.7 c-2.2,3.4-3,7.6-2.2,11.7c0.5,2.4,1.5,4.7,2.9,6.6c-3.1,1.1-6,2.9-8.5,5.2c-4,3.7-6.5,8.8-7.2,14.3c-0.2,1.7-0.2,3.4,0,5.1 c0.1,0.9,0.3,1.7,0.5,2.6c2.3,8,8.4,14.3,16.5,16.5c1.4,0.4,2.8,0.6,4.3,0.8c5.4,0.6,10.6,0.6,16,0c0.9,0,1.8-0.1,2.7-0.2 c8.2-1.2,15.1-6.9,17.4-14.8c0.6-2,0.8-4.1,0.7-6.2c-0.2-4-1.3-7.8-3.4-11.2c-1.8-3-4.4-5.4-7.6-6.9c1.2-1.8,2-3.8,2.5-6 C90.1,34,89.6,31.2,88.7,28.6z"/></svg>`;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                
+                const size = Math.random() * 80 + 20; // size between 20px and 100px
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.animationDuration = `${Math.random() * 15 + 10}s`; // duration between 10s and 25s
+                bubble.style.animationDelay = `${Math.random() * 10}s`;
+                
+                if (Math.random() > 0.75) { // 25% chance for a silhouette
+                    bubble.className = 'bubble silhouette';
+                    bubble.innerHTML = girlSilhouette;
+                } else {
+                    bubble.className = 'bubble circle';
+                }
+                
+                container.appendChild(bubble);
+            }
+        }
+
         function init() {
             populateLanguages();
+            createBubbles();
             const langButton = document.getElementById('language-select-button');
             const langOptions = document.getElementById('language-options');
             const langSearch = document.getElementById('language-search');
