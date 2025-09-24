@@ -138,7 +138,6 @@
             max-width: 896px;
             transition: transform .3s ease, box-shadow .3s ease;
             z-index: 1;
-            /* overflow: hidden; <- This was the cause of the issue */
         }
         
         .btn {
@@ -297,25 +296,6 @@
         }
         
         .panel.dragging { user-select: none; transition: none !important; }
-
-        /* Shine Animation */
-        @keyframes shine {
-            100% {
-                transform: translateX(100%);
-            }
-        }
-        .card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            transform: translateX(-100%);
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(100deg, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 80%);
-            pointer-events: none;
-            animation: shine 10s ease-in-out infinite;
-            border-radius: 1.25rem;
-        }
 
     </style>
 </head>
