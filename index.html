@@ -227,12 +227,12 @@
 
         .back-button { position: absolute; top: 1rem; left: 1rem; background: white; border: 1px solid #f3f4f6; cursor: pointer; color: #6b7280; font-weight: 700; font-size: 1.2rem; line-height: 1; width:36px; height:36px; border-radius:.75rem; display:flex;align-items:center;justify-content:center; z-index: 10; }
         
-        #conversation-panel, #translation-panel {
+        #conversation-panel {
             position: fixed; right: 2rem; bottom: 10rem; width: 380px; max-width: 92vw; height: 560px;
             background: #fff; border:1px solid rgba(0,0,0,.1); border-radius:1.25rem;
             box-shadow: 0 24px 48px -24px rgba(0,0,0,.2);
             display: none; /* Initially hidden */
-            flex-direction:column; z-index: 100;
+            flex-direction:column; overflow:hidden; z-index: 100;
             transition: width .3s ease, height .3s ease, top .3s ease, left .3s ease, right .3s ease, border-radius .3s ease;
         }
         .panel-header{ background: linear-gradient(90deg, #f3f4f6, #e5e7eb); padding: .9rem 1rem; font-weight:700; color: #374151; display:flex; align-items:center; justify-content:space-between; cursor: grab; }
@@ -242,35 +242,18 @@
         .chat-messages{ flex:1; padding: 1rem; overflow-y:auto; display:flex; flex-direction:column; gap:.6rem; background: linear-gradient(180deg, #fff, #f9fafb 60%, #fff); }
         .chat-message { max-width: 84%; padding: 0.55rem 0.75rem; border-radius: 0.9rem; line-height: 1.4; font-size:.98rem; white-space: pre-wrap; }
         .user-message { background-color: var(--pink); color: white; align-self: flex-end; border-bottom-right-radius: 0.3rem; }
-        .ai-message, .staff-message, .translation-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
-        .staff-message { background-color: var(--violet); color: white; }
-        .translation-message { border: 1px dashed #d1d5db; color: #6b7280; font-style: italic;}
+        .ai-message { background-color: #f3f4f6; color: #374151; align-self: flex-start; border-bottom-left-radius: 0.3rem; }
         .typing { align-self: flex-start; background-color: #f3f4f6; color: #374151; border-bottom-left-radius: 0.3rem; display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 0.75rem; border-radius: 0.9rem; max-width: 84%; }
         
-        .translated-text {
-            color: rgba(255, 255, 255, 0.85);
-            font-style: italic;
-            font-size: 0.95em;
-            display: block;
-            margin-top: 0.35rem;
-        }
-        .translation-error {
-            color: #ef4444;
-            font-style: italic;
-            font-size: 0.9em;
-            display: block;
-            margin-top: 0.35rem;
-        }
-
-        .voice-control-container {
+        #voice-controls {
             position: fixed;
+            left: 2rem;
             bottom: 2rem;
-            z-index: 50;
+            top: auto;
+            transform: none;
             display: none;
+            z-index: 50;
         }
-        #voice-controls-ai { left: 2rem; }
-        #voice-controls-translator { right: 2rem; }
-
         .control-group { 
             display: flex;
             align-items: center;
@@ -295,26 +278,15 @@
             white-space: nowrap;
         }
         #big-mic { background: var(--pink); }
-        #translate-btn { background-color: var(--violet); }
-
-        .record-btn {
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-            user-select: none;
-        }
-        .record-btn.recording {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
-        }
-
+        #big-mic.recording{ background: var(--pink); transform: scale(1.1); }
         .ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid; animation: ringPulse 1.6s ease-out infinite; }
         .ring.delay { animation-delay: .35s; opacity:.6; }
         @keyframes ringPulse { 0% { transform: scale(.9); opacity:.9; } 100% { transform: scale(1.15); opacity:0; } }
-        
-        .speaker-toggle { display: flex; background: #e5e7eb; border-radius: .75rem; padding: .25rem; }
-        .speaker-toggle button { flex: 1; padding: .5rem; border-radius: .5rem; border: none; background: transparent; font-weight: 600; color: #6b7280; transition: background-color .2s ease, color .2s ease;}
-        .speaker-toggle button.active.customer { background-color: var(--pink); color: white; box-shadow: 0 2px 4px rgba(236, 72, 153, 0.4); }
-        .speaker-toggle button.active.staff { background-color: var(--violet); color: white; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.4); }
 
+        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 60; flex-direction: column; }
+        #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+        #stop-recording-btn { margin-top: 1.2rem; background: #fff; color: var(--pink); border: 2px solid var(--pink-200); width: 110px; height: 48px; border-radius: 9999px; font-size: .95rem; font-weight: 700; cursor: pointer; }
+        
         .custom-select-container { position: relative; }
         .custom-select-options {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -370,32 +342,20 @@
         <div id="page-form-success" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="thank_you">Thank You!</h1><p class="text-xl mb-4" data-translate-key="form_success_text">Your preference has been noted.</p><p class="mb-6 text-lg" data-translate-key="form_success_subtitle">Please proceed to the disclaimer.</p><button onclick="showPage('page-disclaimer-no')" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div>
     </div>
 
-    <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div><div class="p-4 border-t border-gray-200"><button id="ai-mic-btn" class="w-full btn btn-primary record-btn" data-translate-key="hold_to_speak">Speak</button></div></div>
+    <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div></div>
     
-    <div id="translation-panel" class="panel">
-        <div id="translation-panel-header" class="panel-header"><span data-translate-key="translator_header">Live Translator</span><button class="close-panel-btn" title="Close panel">&times;</button></div>
-        <div id="translation-chat-messages" class="chat-messages"></div>
-        <div class="p-4 border-t border-gray-200">
-            <div class="speaker-toggle mb-4">
-                <button id="speaker-customer" data-translate-key="customer_speaker">Customer</button>
-                <button id="speaker-staff" data-translate-key="staff_speaker">Staff</button>
-            </div>
-            <button id="translation-mic-btn" class="w-full btn record-btn" data-translate-key="hold_to_speak">Speak</button>
-        </div>
-    </div>
-
-    <div id="voice-controls-ai" class="voice-control-container">
+    <div id="voice-controls">
         <div class="control-group">
-            <button id="big-mic" title="AI Assistant" class="control-button"><div class="ring" style="border-color: var(--pink);"></div><div class="ring delay" style="border-color: var(--pink);"></div><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
+            <button id="big-mic" title="Tap to speak with AI assistant" class="control-button"><div class="ring" style="border-color: var(--pink);"></div><div class="ring delay" style="border-color: var(--pink);"></div><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
             <p class="control-prompt" data-translate-key="ai_prompt">AI Assistant</p>
         </div>
     </div>
-
-    <div id="voice-controls-translator" class="voice-control-container">
-        <div class="control-group">
-             <p class="control-prompt" data-translate-key="translator_prompt">Translator</p>
-            <button id="translate-btn" title="Translator" class="control-button"><div class="ring" style="border-color: var(--violet);"></div><div class="ring delay" style="border-color: var(--violet);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="m7 2 3 5"/><path d="m10 14 3-3 5 5"/><path d="m14 11 5 5"/><path d="M11 22h8"/></svg></button>
+    
+    <div id="voice-overlay">
+        <div id="voice-visualizer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
         </div>
+        <button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button>
     </div>
 
     <script>
@@ -404,10 +364,7 @@
         let currentLanguage = 'en';
         let pageHistory = [];
         let chatHistory = [];
-        let currentChatMode = 'ai'; // 'ai' or 'translation'
-        let currentSpeaker = 'customer'; // 'customer' or 'staff'
         let mediaRecorder, audioChunks = [], isRecording = false;
-        let activeMicBtn = null;
 
         // --- SESSION MANAGEMENT ---
         const SESSION_KEY = 'tgh_session_id'; const SESSION_TS_KEY = 'tgh_session_ts';
@@ -421,7 +378,7 @@
         // --- TRANSLATION DATA ---
         const translations = {
             'en': { 
-                ai_prompt: "AI Assistant", translator_prompt: "Translator", translator_header: "Live Translator", customer_speaker: "Customer", staff_speaker: "Staff", hold_to_speak: "Speak", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", 
+                ai_prompt: "Ask any question", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", 
                 welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", 
                 our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "View Pricing", 
                 pricing_title: "Our Pricing", pricing_subtitle: "Simple and transparent pricing for our companionship services.", 
@@ -437,7 +394,7 @@
                 chat_header: "AI Assistant", error_speak_again: "An error occurred. Please speak into the mic again." 
             },
             'ja': { 
-                ai_prompt: "AIアシスタント",  translator_prompt: "翻訳者", translator_header: "ライブ翻訳", customer_speaker: "お客様", staff_speaker: "スタッフ", hold_to_speak: "話す", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", 
+                ai_prompt: "何でも聞いてください", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", 
                 welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", 
                 our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "料金を見る", 
                 pricing_title: "料金プラン", pricing_subtitle: "明確でシンプルなコンパニオンサービスの料金プランです。",
@@ -453,7 +410,7 @@
                 chat_header: "AIアシスタント", error_speak_again: "エラーが発生しました。もう一度マイクに向かってお話しください。" 
             },
             'zh': { 
-                ai_prompt: "AI助手", translator_prompt: "翻译员", translator_header: "实时翻译", customer_speaker: "顾客", staff_speaker: "员工", hold_to_speak: "说话", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", 
+                ai_prompt: "有任何问题请提问", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", 
                 welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", 
                 our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "查看价格", 
                 pricing_title: "我们的价格", pricing_subtitle: "我们伴游服务的价格简单透明。",
@@ -469,7 +426,7 @@
                 chat_header: "AI助手", error_speak_again: "发生错误，请再对麦克风说一次。" 
             },
             'ko': { 
-                ai_prompt: "AI 어시스턴트", translator_prompt: "번역가", translator_header: "실시간 번역기", customer_speaker: "고객", staff_speaker: "직원", hold_to_speak: "말하기", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", 
+                ai_prompt: "무엇이든 물어보세요", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", 
                 welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", 
                 our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "가격 보기", 
                 pricing_title: "요금 안내", pricing_subtitle: "간단하고 투명한 저희 동반 서비스 요금입니다。",
@@ -485,7 +442,7 @@
                 chat_header: "AI 어시스턴트", error_speak_again: "오류가 발생했습니다. 마이크에 다시 말씀해주세요。" 
             },
             'es': { 
-                ai_prompt: "Asistente de IA", translator_prompt: "Traductor", translator_header: "Traductor en Vivo", customer_speaker: "Cliente", staff_speaker: "Personal", hold_to_speak: "Hablar", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", 
+                ai_prompt: "Haga cualquier pregunta", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", 
                 welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", 
                 our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Ver Precios", 
                 pricing_title: "Nuestros Precios", pricing_subtitle: "Precios simples y transparentes para nuestros servicios de acompañamiento.",
@@ -501,12 +458,12 @@
                 chat_header: "Asistente de IA", error_speak_again: "Ocurrió un error. Por favor, hable de nuevo al micrófono." 
             },
             'zh-tw': { 
-                ai_prompt: "AI助理", translator_prompt: "翻譯員", translator_header: "即時翻譯", customer_speaker: "顧客", staff_speaker: "員工", hold_to_speak: "說話", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", 
+                ai_prompt: "有任何問題請提問", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", 
                 welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", 
                 our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "查看價格", 
                 pricing_title: "我們的價格", pricing_subtitle: "我們伴遊服務的價格簡單透明。",
                 duration_60: "60分鐘", duration_90: "90分鐘", duration_120: "120分鐘",
-                legal_reminder_title_serious: "【重要】免責聲明与使用條款", 
+                legal_reminder_title_serious: "【重要】免責聲明與使用條款", 
                 legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根據日本法律，嚴禁為性交支付任何形式的報酬。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作：</strong>我們要求客戶合作以維護法律。請不要要求在日本非法的服務。</p><p><strong>3. 服務性質：</strong>所有費用僅用於我們伴侶的時間和愉快陪伴。繼續操作即表示您承認您沒有為任何非法行為付費。</p>", 
                 legal_reminder_agreement: "點擊「同意」，即表示您確認已閱讀並理解這些條款。", 
                 confirm_btn: "同意", reject_btn: "拒絕", thank_you: "謝謝", rejection_text: "感謝您的關注。我們期待能再次為您服務。正在重定向...", 
@@ -522,46 +479,38 @@
         // --- UI & CORE LOGIC ---
         const aiChatMessages = document.getElementById('ai-chat-messages');
         const aiConversationPanel = document.getElementById('conversation-panel');
-        const translationChatMessages = document.getElementById('translation-chat-messages');
-        const translationConversationPanel = document.getElementById('translation-panel');
         const bigMicBtn = document.getElementById('big-mic');
-        const translateBtn = document.getElementById('translate-btn');
-        const aiMicBtn = document.getElementById('ai-mic-btn');
-        const translationMicBtn = document.getElementById('translation-mic-btn');
+        const voiceOverlay = document.getElementById('voice-overlay');
+        const stopRecordingBtn = document.getElementById('stop-recording-btn');
         let audioContext, analyser, dataArray, source, rafId;
 
-        function updateText() {
-            const langPack = translations[currentLanguage] || translations['en'];
-            document.querySelectorAll('[data-translate-key]').forEach(el => {
-                const key = el.getAttribute('data-translate-key');
-                if (langPack[key]) {
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        el.placeholder = langPack[key];
-                        return; // continue to next element in forEach
-                    }
-
-                    // For all other elements, manage text and icons separately
-                    const arrowKeys = ['continue_btn', 'ok_btn', 'confirm_btn', 'submit_continue_btn'];
-                    const needsArrow = el.tagName === 'BUTTON' && arrowKeys.includes(key);
-
-                    // Clear existing text nodes to prevent duplication
-                    Array.from(el.childNodes).forEach(child => {
-                        if (child.nodeType === 3) { // It's a text node
-                            el.removeChild(child);
+        function updateText() { 
+            const langPack = translations[currentLanguage] || translations['en']; 
+            document.querySelectorAll('[data-translate-key]').forEach(el => { 
+                const key = el.getAttribute('data-translate-key'); 
+                if (langPack[key]) { 
+                    const originalHTML = el.innerHTML;
+                    const textNode = [...el.childNodes].find(node => node.nodeType === 3 && node.textContent.trim().length > 0);
+                    
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { 
+                        el.placeholder = langPack[key]; 
+                    } else { 
+                        if(textNode) {
+                            textNode.textContent = langPack[key];
+                        } else {
+                            el.innerHTML = langPack[key];
                         }
-                    });
-
-                    // Add new text node at the beginning
-                    const newText = langPack[key] + (needsArrow ? ' ' : '');
-                    el.prepend(document.createTextNode(newText));
-
-                    // Add arrow if needed and if it doesn't exist
-                    if (needsArrow && !el.querySelector('.btn-icon')) {
-                        el.insertAdjacentHTML('beforeend', '<span class="btn-icon ml-2">&rarr;</span>');
                     }
-                }
-            });
-            populateServices();
+
+                    const arrowKeys = ['continue_btn', 'ok_btn', 'confirm_btn', 'submit_continue_btn'];
+                    if (el.tagName === 'BUTTON' && arrowKeys.includes(key)) {
+                        if (!el.querySelector('.btn-icon')) {
+                             el.insertAdjacentHTML('beforeend', ' <span class="btn-icon ml-2">&rarr;</span>');
+                        }
+                    }
+                } 
+            }); 
+            populateServices(); 
         }
 
         function populateLanguages(filter = '') {
@@ -624,13 +573,12 @@
                 targetPage.classList.add('active'); 
                 updateText(); 
             }
-            document.querySelectorAll('.voice-control-container').forEach(el => {
-                if (pageId !== 'page-language') {
-                    el.style.display = 'flex';
-                } else {
-                    el.style.display = 'none';
-                }
-            });
+            const voiceControls = document.getElementById('voice-controls');
+            if (pageId !== 'page-language') {
+                voiceControls.style.display = 'flex';
+            } else {
+                voiceControls.style.display = 'none';
+            }
         }
         function goBack() { if (pageHistory.length > 0) { const prevPageId = pageHistory.pop(); showPage(prevPageId, true); } }
         function redirectToBooking() {
@@ -671,11 +619,6 @@
                 e.preventDefault();
                 pos3 = e.clientX;
                 pos4 = e.clientY;
-                const rect = panel.getBoundingClientRect();
-                panel.style.top = rect.top + 'px';
-                panel.style.left = rect.left + 'px';
-                panel.style.right = 'auto'; 
-                panel.style.bottom = 'auto';
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
                 panel.classList.add('dragging');
@@ -687,6 +630,8 @@
                 pos2 = pos4 - e.clientY;
                 pos3 = e.clientX;
                 pos4 = e.clientY;
+                panel.style.bottom = 'auto';
+                panel.style.right = 'auto';
                 panel.style.top = (panel.offsetTop - pos2) + "px";
                 panel.style.left = (panel.offsetLeft - pos1) + "px";
             }
@@ -700,12 +645,9 @@
         
         // --- CONVERSATION & VOICE ---
         function closeAllPanels() {
-            [aiConversationPanel, translationConversationPanel].forEach(panel => {
-                panel.style.display = 'none';
-            });
+            aiConversationPanel.style.display = 'none';
         }
-
-        function addChatMessage(message, sender, panel) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.innerHTML = message; panel.appendChild(msgDiv); panel.scrollTop = panel.scrollHeight; return msgDiv; }
+        function addChatMessage(message, sender, panel) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; panel.appendChild(msgDiv); panel.scrollTop = panel.scrollHeight; return msgDiv; }
         function addTypingIndicator(panel) { const wrap = document.createElement('div'); wrap.className = 'typing'; wrap.innerHTML = `<span>.</span><span>.</span><span>.</span>`; panel.appendChild(wrap); panel.scrollTop = panel.scrollHeight; return wrap; }
         
         async function sendAudioToWebhook(audioBlob) {
@@ -717,8 +659,15 @@
             fd.append('language', currentLanguage);
             fd.append('history', JSON.stringify(chatHistory));
             try {
-                const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
-                if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
+                const resp = await fetch(n8nWebhookUrl, { 
+                    method: 'POST', 
+                    body: fd
+                });
+
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
+                
                 const data = await readResponseSafely(resp);
                 const transcribedText = data?.transcribed_text || "🎤 (Voice message received)";
                 const aiResponse = data?.response || "Thank you, your message has been noted.";
@@ -732,120 +681,69 @@
             } catch (error) {
                 console.error("Audio chat error:", error);
                 if (typingEl && typingEl.parentNode) typingEl.remove();
-                addChatMessage(translations[currentLanguage]?.error_speak_again || "An error occurred.", 'ai', aiChatMessages);
+                const langPack = translations[currentLanguage] || translations['en'];
+                const errorMessage = langPack['error_speak_again'] || "An error occurred. Please speak into the mic again.";
+                addChatMessage(errorMessage, 'ai', aiChatMessages);
             }
         }
 
-        async function sendAudioForTranslation(audioBlob) {
-            const typingEl = addTypingIndicator(translationChatMessages);
-            const fd = new FormData();
-            fd.append('file', audioBlob, 'voice.webm');
-            fd.append('session_id', getSessionId());
-            fd.append('type', `translation_${currentSpeaker}`);
-            fd.append('language', currentLanguage);
-            try {
-                const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
-                if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
-                const data = await readResponseSafely(resp);
-                if (typingEl.parentNode) typingEl.remove();
-                if (data.transcribed_text) {
-                    const originalSender = currentSpeaker === 'customer' ? 'user' : 'staff';
-                    let messageContent = data.transcribed_text;
-
-                    if (data.response) {
-                        messageContent += `<br><span class="translated-text">${data.response}</span>`;
-                    } else {
-                        messageContent += `<br><span class="translation-error">(No translation received)</span>`;
-                    }
-                    addChatMessage(messageContent, originalSender, translationChatMessages);
-                }
-            } catch (error) {
-                console.error("Translation error:", error);
-                if (typingEl && typingEl.parentNode) typingEl.remove();
-                addChatMessage("Translation failed.", "ai", translationChatMessages);
-            }
+        function visualize(stream) {
+            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            audioContext.resume();
+            const visualizer = document.getElementById('voice-visualizer');
+            source = audioContext.createMediaStreamSource(stream);
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            source.connect(analyser);
+            const draw = () => {
+                rafId = requestAnimationFrame(draw);
+                if (!analyser) return;
+                analyser.getByteFrequencyData(dataArray);
+                const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+                visualizer.style.transform = `scale(${1 + (avg / 128)})`;
+            };
+            draw();
         }
-        
-        function handleMicButtonClick(e) {
-            if (isRecording) {
-                stopRecording();
-            } else {
-                activeMicBtn = e.currentTarget;
-                startRecording();
-            }
-        }
-
         async function startRecording() {
-            if (isRecording || !activeMicBtn) return;
-            currentChatMode = activeMicBtn.id.includes('ai') ? 'ai' : 'translation';
-
+            if (isRecording) return;
+            
+            aiConversationPanel.style.display = 'flex';
+            
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                voiceOverlay.style.display = 'flex';
+                visualize(stream);
                 audioChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
                 isRecording = true;
-                activeMicBtn.classList.add('recording');
-                activeMicBtn.dataset.originalText = activeMicBtn.innerHTML;
-                activeMicBtn.innerHTML = translations[currentLanguage]?.stop_btn || "Stop";
-
+                bigMicBtn.classList.add('recording');
                 mediaRecorder.addEventListener("dataavailable", (event) => { if (event.data?.size) audioChunks.push(event.data); });
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    if(currentChatMode === 'ai') {
-                        sendAudioToWebhook(audioBlob);
-                    } else {
-                        sendAudioForTranslation(audioBlob);
-                    }
+                    sendAudioToWebhook(audioBlob);
                     stream.getTracks().forEach(track => track.stop());
                 });
             } catch (err) { alert("Microphone access is required. Please allow access and try again."); }
         }
-
         function stopRecording() {
             if (!isRecording) return;
             if (mediaRecorder?.state === "recording") mediaRecorder.stop();
             isRecording = false;
             
-            const btn = activeMicBtn || document.querySelector('.record-btn.recording');
-            if (btn) {
-                btn.classList.remove('recording');
-                btn.innerHTML = btn.dataset.originalText || (translations[currentLanguage]?.hold_to_speak || "Speak");
-            }
-            activeMicBtn = null;
-        }
+            voiceOverlay.style.display = 'none';
+            bigMicBtn.classList.remove('recording');
 
-        function togglePanel(panelId) {
-            const panel = document.getElementById(panelId);
-            const isVisible = panel.style.display === 'flex';
-            closeAllPanels();
-            if (!isVisible) {
-                panel.style.display = 'flex';
-            }
-        }
-        
-        function setSpeaker(speaker) {
-            currentSpeaker = speaker;
-            const customerBtn = document.getElementById('speaker-customer');
-            const staffBtn = document.getElementById('speaker-staff');
-            const micBtn = document.getElementById('translation-mic-btn');
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = null;
+            if (source) source.disconnect();
             
-            micBtn.style.color = 'white';
-
-            if (speaker === 'customer') {
-                customerBtn.classList.add('active', 'customer');
-                customerBtn.classList.remove('staff');
-                staffBtn.classList.remove('active', 'customer', 'staff');
-                micBtn.style.backgroundColor = 'var(--pink)';
-                micBtn.style.borderColor = 'var(--pink)';
-            } else { // staff
-                staffBtn.classList.add('active', 'staff');
-                staffBtn.classList.remove('customer');
-                customerBtn.classList.remove('active', 'customer', 'staff');
-                micBtn.style.backgroundColor = 'var(--violet)';
-                micBtn.style.borderColor = 'var(--violet)';
-            }
+            const visualizer = document.getElementById('voice-visualizer');
+            if(visualizer) visualizer.style.transform = 'scale(1)';
         }
+        async function toggleRecording() { isRecording ? stopRecording() : await startRecording(); }
 
         // --- INITIALIZATION ---
         function createBubbles() {
@@ -913,23 +811,13 @@
                 showPage('page-first-time'); 
             });
 
-            bigMicBtn.addEventListener('click', () => { currentChatMode = 'ai'; togglePanel('conversation-panel'); });
-            translateBtn.addEventListener('click', () => { currentChatMode = 'translation'; togglePanel('translation-panel'); });
-
-            [aiMicBtn, translationMicBtn].forEach(btn => {
-                btn.addEventListener('click', handleMicButtonClick);
-            });
-
-            document.getElementById('speaker-customer').addEventListener('click', () => setSpeaker('customer'));
-            document.getElementById('speaker-staff').addEventListener('click', () => setSpeaker('staff'));
+            bigMicBtn.addEventListener('click', toggleRecording);
+            
+            stopRecordingBtn.addEventListener('click', stopRecording);
             
             makeDraggable(document.getElementById('conversation-panel'), document.querySelector('#conversation-panel .panel-header'));
-            makeDraggable(document.getElementById('translation-panel'), document.querySelector('#translation-panel .panel-header'));
-
-            setSpeaker('customer');
         }
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
-
