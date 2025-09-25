@@ -730,10 +730,14 @@
                 const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
                 if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
                 const data = await readResponseSafely(resp);
-                if (data.transcribed_text && data.response) {
+                if (data.transcribed_text) {
                     const originalSender = currentSpeaker === 'customer' ? 'user' : 'staff';
                     addChatMessage(data.transcribed_text, originalSender, translationChatMessages);
-                    addChatMessage(`(Translated: ${data.response})`, 'translation', translationChatMessages);
+                    if (data.response) {
+                        addChatMessage(`(Translated: ${data.response})`, 'translation', translationChatMessages);
+                    } else {
+                        addChatMessage("(Translation not received. Please check n8n workflow.)", 'ai', translationChatMessages);
+                    }
                 }
             } catch (error) {
                 console.error("Translation error:", error);
@@ -880,3 +884,4 @@
     </script>
 </body>
 </html>
+
