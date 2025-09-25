@@ -474,7 +474,7 @@
                 pricing_title: "요금 안내", pricing_subtitle: "간단하고 투명한 저희 동반 서비스 요금입니다。",
                 duration_60: "60분", duration_90: "90분", duration_120: "120분",
                 legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", 
-                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률を 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
                 legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", 
                 confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", 
                 welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", 
@@ -738,6 +738,7 @@
         }
 
         async function sendAudioForTranslation(audioBlob) {
+            const typingEl = addTypingIndicator(translationChatMessages);
             const fd = new FormData();
             fd.append('file', audioBlob, 'voice.webm');
             fd.append('session_id', getSessionId());
@@ -747,6 +748,7 @@
                 const resp = await fetch(n8nWebhookUrl, { method: 'POST', body: fd });
                 if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
                 const data = await readResponseSafely(resp);
+                if (typingEl.parentNode) typingEl.remove();
                 if (data.transcribed_text) {
                     const originalSender = currentSpeaker === 'customer' ? 'user' : 'staff';
                     let messageContent = data.transcribed_text;
@@ -760,6 +762,7 @@
                 }
             } catch (error) {
                 console.error("Translation error:", error);
+                if (typingEl && typingEl.parentNode) typingEl.remove();
                 addChatMessage("Translation failed.", "ai", translationChatMessages);
             }
         }
