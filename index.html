@@ -649,6 +649,15 @@
                 e.preventDefault();
                 pos3 = e.clientX;
                 pos4 = e.clientY;
+
+                // FIX: Get the panel's current position from getBoundingClientRect
+                // and set it explicitly before starting the drag. This prevents
+                // the panel from jumping or disappearing when its 'right' and 'bottom'
+                // styles are removed.
+                const rect = panel.getBoundingClientRect();
+                panel.style.top = rect.top + 'px';
+                panel.style.left = rect.left + 'px';
+                
                 panel.style.right = 'auto'; 
                 panel.style.bottom = 'auto';
                 document.onmouseup = closeDragElement;
@@ -677,10 +686,6 @@
         function closeAllPanels() {
             [aiConversationPanel, translationConversationPanel].forEach(panel => {
                 panel.style.display = 'none';
-                panel.style.top = '';
-                panel.style.left = '';
-                panel.style.right = '';
-                panel.style.bottom = '';
             });
         }
 
@@ -736,17 +741,18 @@
             }
         }
         
-        async function startRecording() {
+        async function startRecording(e) {
             if (isRecording) return;
+            const btn = e.currentTarget;
+            currentChatMode = btn.id.includes('ai') ? 'ai' : 'translation';
+
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 audioChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
                 isRecording = true;
-
-                const activeBtn = document.getElementById(currentChatMode === 'ai' ? 'ai-mic-btn' : 'translation-mic-btn');
-                if (activeBtn) activeBtn.classList.add('recording');
+                btn.classList.add('recording');
 
                 mediaRecorder.addEventListener("dataavailable", (event) => { if (event.data?.size) audioChunks.push(event.data); });
                 mediaRecorder.addEventListener("stop", () => {
@@ -761,13 +767,13 @@
             } catch (err) { alert("Microphone access is required. Please allow access and try again."); }
         }
 
-        function stopRecording() {
+        function stopRecording(e) {
             if (!isRecording) return;
             if (mediaRecorder?.state === "recording") mediaRecorder.stop();
             isRecording = false;
             
-            aiMicBtn.classList.remove('recording');
-            translationMicBtn.classList.remove('recording');
+            const btn = e.currentTarget;
+            if (btn) btn.classList.remove('recording');
         }
 
         function togglePanel(panelId) {
@@ -826,7 +832,7 @@
             document.querySelectorAll('.close-panel-btn').forEach(btn => btn.addEventListener('click', () => {
                 closeAllPanels();
                 if (isRecording) {
-                    stopRecording();
+                    stopRecording({ currentTarget: null });
                 }
             }));
             
@@ -850,10 +856,10 @@
 
             [aiMicBtn, translationMicBtn].forEach(btn => {
                 btn.addEventListener('mousedown', startRecording);
-                btn.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
+                btn.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(e); });
                 btn.addEventListener('mouseup', stopRecording);
                 btn.addEventListener('touchend', stopRecording);
-                btn.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
+                btn.addEventListener('mouseleave', (e) => { if (isRecording) stopRecording(e); });
             });
 
             document.getElementById('speaker-customer').addEventListener('click', () => {
@@ -874,4 +880,3 @@
     </script>
 </body>
 </html>
-
