@@ -312,7 +312,8 @@
         
         .speaker-toggle { display: flex; background: #e5e7eb; border-radius: .75rem; padding: .25rem; }
         .speaker-toggle button { flex: 1; padding: .5rem; border-radius: .5rem; border: none; background: transparent; font-weight: 600; color: #6b7280; transition: background-color .2s ease, color .2s ease;}
-        .speaker-toggle button.active { background: white; color: var(--violet); box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+        .speaker-toggle button.active.customer { background-color: var(--pink); color: white; box-shadow: 0 2px 4px rgba(236, 72, 153, 0.4); }
+        .speaker-toggle button.active.staff { background-color: var(--violet); color: white; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.4); }
 
         .custom-select-container { position: relative; }
         .custom-select-options {
@@ -376,10 +377,10 @@
         <div id="translation-chat-messages" class="chat-messages"></div>
         <div class="p-4 border-t border-gray-200">
             <div class="speaker-toggle mb-4">
-                <button id="speaker-customer" class="active" data-translate-key="customer_speaker">Customer</button>
+                <button id="speaker-customer" data-translate-key="customer_speaker">Customer</button>
                 <button id="speaker-staff" data-translate-key="staff_speaker">Staff</button>
             </div>
-            <button id="translation-mic-btn" class="w-full btn btn-primary record-btn" style="background-color: var(--violet);" data-translate-key="hold_to_speak">Speak</button>
+            <button id="translation-mic-btn" class="w-full btn record-btn" data-translate-key="hold_to_speak">Speak</button>
         </div>
     </div>
 
@@ -474,7 +475,7 @@
                 pricing_title: "요금 안내", pricing_subtitle: "간단하고 투명한 저희 동반 서비스 요금입니다。",
                 duration_60: "60분", duration_90: "90분", duration_120: "120분",
                 legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", 
-                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률を 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
                 legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", 
                 confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", 
                 welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", 
@@ -505,7 +506,7 @@
                 our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "查看價格", 
                 pricing_title: "我們的價格", pricing_subtitle: "我們伴遊服務的價格簡單透明。",
                 duration_60: "60分鐘", duration_90: "90分鐘", duration_120: "120分鐘",
-                legal_reminder_title_serious: "【重要】免責聲明與使用條款", 
+                legal_reminder_title_serious: "【重要】免責聲明与使用條款", 
                 legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根據日本法律，嚴禁為性交支付任何形式的報酬。本機構完全遵守所有法規。</p><p><strong>2. 客戶合作：</strong>我們要求客戶合作以維護法律。請不要要求在日本非法的服務。</p><p><strong>3. 服務性質：</strong>所有費用僅用於我們伴侶的時間和愉快陪伴。繼續操作即表示您承認您沒有為任何非法行為付費。</p>", 
                 legal_reminder_agreement: "點擊「同意」，即表示您確認已閱讀並理解這些條款。", 
                 confirm_btn: "同意", reject_btn: "拒絕", thank_you: "謝謝", rejection_text: "感謝您的關注。我們期待能再次為您服務。正在重定向...", 
@@ -529,40 +530,38 @@
         const translationMicBtn = document.getElementById('translation-mic-btn');
         let audioContext, analyser, dataArray, source, rafId;
 
-        function updateText() { 
-            const langPack = translations[currentLanguage] || translations['en']; 
-            document.querySelectorAll('[data-translate-key]').forEach(el => { 
-                const key = el.getAttribute('data-translate-key'); 
-                if (langPack[key]) { 
-                    const originalHTML = el.innerHTML;
-                    const textNode = [...el.childNodes].find(node => node.nodeType === 3 && node.textContent.trim().length > 0);
-                    
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { 
-                        el.placeholder = langPack[key]; 
-                    } else {
-                        // Avoid overwriting icons inside buttons
-                        const icon = el.querySelector('.btn-icon');
-                        if (icon) {
-                            const textContent = langPack[key];
-                            el.childNodes.forEach(node => {
-                                if (node.nodeType === 3) { // It's a text node
-                                    node.textContent = textContent + ' ';
-                                }
-                            });
-                        } else {
-                             el.innerHTML = langPack[key];
-                        }
+        function updateText() {
+            const langPack = translations[currentLanguage] || translations['en'];
+            document.querySelectorAll('[data-translate-key]').forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (langPack[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = langPack[key];
+                        return; // continue to next element in forEach
                     }
 
+                    // For all other elements, manage text and icons separately
                     const arrowKeys = ['continue_btn', 'ok_btn', 'confirm_btn', 'submit_continue_btn'];
-                    if (el.tagName === 'BUTTON' && arrowKeys.includes(key)) {
-                        if (!el.querySelector('.btn-icon')) {
-                             el.insertAdjacentHTML('beforeend', ' <span class="btn-icon ml-2">&rarr;</span>');
+                    const needsArrow = el.tagName === 'BUTTON' && arrowKeys.includes(key);
+
+                    // Clear existing text nodes to prevent duplication
+                    Array.from(el.childNodes).forEach(child => {
+                        if (child.nodeType === 3) { // It's a text node
+                            el.removeChild(child);
                         }
+                    });
+
+                    // Add new text node at the beginning
+                    const newText = langPack[key] + (needsArrow ? ' ' : '');
+                    el.prepend(document.createTextNode(newText));
+
+                    // Add arrow if needed and if it doesn't exist
+                    if (needsArrow && !el.querySelector('.btn-icon')) {
+                        el.insertAdjacentHTML('beforeend', '<span class="btn-icon ml-2">&rarr;</span>');
                     }
-                } 
-            }); 
-            populateServices(); 
+                }
+            });
+            populateServices();
         }
 
         function populateLanguages(filter = '') {
@@ -824,6 +823,27 @@
                 panel.style.display = 'flex';
             }
         }
+        
+        function setSpeaker(speaker) {
+            currentSpeaker = speaker;
+            const customerBtn = document.getElementById('speaker-customer');
+            const staffBtn = document.getElementById('speaker-staff');
+            const micBtn = document.getElementById('translation-mic-btn');
+
+            if (speaker === 'customer') {
+                customerBtn.classList.add('active', 'customer');
+                customerBtn.classList.remove('staff');
+                staffBtn.classList.remove('active', 'customer', 'staff');
+                micBtn.style.backgroundColor = 'var(--pink)';
+                micBtn.style.borderColor = 'var(--pink)';
+            } else { // staff
+                staffBtn.classList.add('active', 'staff');
+                staffBtn.classList.remove('customer');
+                customerBtn.classList.remove('active', 'customer', 'staff');
+                micBtn.style.backgroundColor = 'var(--violet)';
+                micBtn.style.borderColor = 'var(--violet)';
+            }
+        }
 
         // --- INITIALIZATION ---
         function createBubbles() {
@@ -898,19 +918,13 @@
                 btn.addEventListener('click', handleMicButtonClick);
             });
 
-            document.getElementById('speaker-customer').addEventListener('click', () => {
-                currentSpeaker = 'customer';
-                document.getElementById('speaker-customer').classList.add('active');
-                document.getElementById('speaker-staff').classList.remove('active');
-            });
-            document.getElementById('speaker-staff').addEventListener('click', () => {
-                currentSpeaker = 'staff';
-                document.getElementById('speaker-staff').classList.add('active');
-                document.getElementById('speaker-customer').classList.remove('active');
-            });
+            document.getElementById('speaker-customer').addEventListener('click', () => setSpeaker('customer'));
+            document.getElementById('speaker-staff').addEventListener('click', () => setSpeaker('staff'));
             
             makeDraggable(document.getElementById('conversation-panel'), document.querySelector('#conversation-panel .panel-header'));
             makeDraggable(document.getElementById('translation-panel'), document.querySelector('#translation-panel .panel-header'));
+
+            setSpeaker('customer');
         }
         document.addEventListener('DOMContentLoaded', init);
     </script>
