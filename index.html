@@ -232,7 +232,7 @@
             background: #fff; border:1px solid rgba(0,0,0,.1); border-radius:1.25rem;
             box-shadow: 0 24px 48px -24px rgba(0,0,0,.2);
             display: none; /* Initially hidden */
-            flex-direction:column; overflow:hidden; z-index: 100;
+            flex-direction:column; z-index: 100;
             transition: width .3s ease, height .3s ease, top .3s ease, left .3s ease, right .3s ease, border-radius .3s ease;
         }
         .panel-header{ background: linear-gradient(90deg, #f3f4f6, #e5e7eb); padding: .9rem 1rem; font-weight:700; color: #374151; display:flex; align-items:center; justify-content:space-between; cursor: grab; }
@@ -280,17 +280,20 @@
             white-space: nowrap;
         }
         #big-mic { background: var(--pink); }
-        #big-mic.recording{ background: var(--pink); transform: scale(1.1); }
         #translate-btn { background-color: var(--violet); }
-        #translate-btn.recording { background: #7c3aed; transform: scale(1.1); }
+
+        .record-btn {
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            user-select: none;
+        }
+        .record-btn.recording {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+        }
 
         .ring { position:absolute; inset:-8px; border-radius:9999px; border:2px solid; animation: ringPulse 1.6s ease-out infinite; }
         .ring.delay { animation-delay: .35s; opacity:.6; }
         @keyframes ringPulse { 0% { transform: scale(.9); opacity:.9; } 100% { transform: scale(1.15); opacity:0; } }
-
-        #voice-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 60; flex-direction: column; }
-        #voice-visualizer { width: 190px; height: 190px; border-radius: 50%; background-color: var(--pink); display: flex; align-items: center; justify-content: center; transition: transform 0.1s ease-out; box-shadow:0 20px 60px rgba(0,0,0,.3); }
-        #stop-recording-btn { margin-top: 1.2rem; background: #fff; color: var(--pink); border: 2px solid var(--pink-200); width: 110px; height: 48px; border-radius: 9999px; font-size: .95rem; font-weight: 700; cursor: pointer; }
         
         .speaker-toggle { display: flex; background: #e5e7eb; border-radius: .75rem; padding: .25rem; }
         .speaker-toggle button { flex: 1; padding: .5rem; border-radius: .5rem; border: none; background: transparent; font-weight: 600; color: #6b7280; transition: background-color .2s ease, color .2s ease;}
@@ -351,7 +354,7 @@
         <div id="page-form-success" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="thank_you">Thank You!</h1><p class="text-xl mb-4" data-translate-key="form_success_text">Your preference has been noted.</p><p class="mb-6 text-lg" data-translate-key="form_success_subtitle">Please proceed to the disclaimer.</p><button onclick="showPage('page-disclaimer-no')" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div>
     </div>
 
-    <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div></div>
+    <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div><div class="p-4 border-t border-gray-200"><button id="ai-mic-btn" class="w-full btn btn-primary record-btn" data-translate-key="hold_to_speak">Hold to Speak</button></div></div>
     
     <div id="translation-panel" class="panel">
         <div id="translation-panel-header" class="panel-header"><span data-translate-key="translator_header">Live Translator</span><button class="close-panel-btn" title="Close panel">&times;</button></div>
@@ -361,28 +364,22 @@
                 <button id="speaker-customer" class="active" data-translate-key="customer_speaker">Customer</button>
                 <button id="speaker-staff" data-translate-key="staff_speaker">Staff</button>
             </div>
+            <button id="translation-mic-btn" class="w-full btn btn-primary record-btn" style="background-color: var(--violet);" data-translate-key="hold_to_speak">Hold to Speak</button>
         </div>
     </div>
 
     <div id="voice-controls-ai" class="voice-control-container">
         <div class="control-group">
-            <button id="big-mic" title="Tap to speak with AI assistant" class="control-button"><div class="ring" style="border-color: var(--pink);"></div><div class="ring delay" style="border-color: var(--pink);"></div><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
-            <p class="control-prompt" data-translate-key="ai_prompt">Hold to Speak</p>
+            <button id="big-mic" title="AI Assistant" class="control-button"><div class="ring" style="border-color: var(--pink);"></div><div class="ring delay" style="border-color: var(--pink);"></div><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button>
+            <p class="control-prompt" data-translate-key="ai_prompt">AI Assistant</p>
         </div>
     </div>
 
     <div id="voice-controls-translator" class="voice-control-container">
         <div class="control-group">
-             <p class="control-prompt" data-translate-key="translator_prompt">Hold to Translate</p>
-            <button id="translate-btn" title="Tap to speak with a translator" class="control-button"><div class="ring" style="border-color: var(--violet);"></div><div class="ring delay" style="border-color: var(--violet);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="m7 2 3 5"/><path d="m10 14 3-3 5 5"/><path d="m14 11 5 5"/><path d="M11 22h8"/></svg></button>
+             <p class="control-prompt" data-translate-key="translator_prompt">Translator</p>
+            <button id="translate-btn" title="Translator" class="control-button"><div class="ring" style="border-color: var(--violet);"></div><div class="ring delay" style="border-color: var(--violet);"></div><svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="m7 2 3 5"/><path d="m10 14 3-3 5 5"/><path d="m14 11 5 5"/><path d="M11 22h8"/></svg></button>
         </div>
-    </div>
-    
-    <div id="voice-overlay">
-        <div id="voice-visualizer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-        </div>
-        <button id="stop-recording-btn" data-translate-key="stop_btn">Stop</button>
     </div>
 
     <script>
@@ -407,7 +404,7 @@
         // --- TRANSLATION DATA ---
         const translations = {
             'en': { 
-                ai_prompt: "Hold to Speak", translator_prompt: "Hold to Translate", translator_header: "Live Translator", customer_speaker: "Customer", staff_speaker: "Staff", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", 
+                ai_prompt: "AI Assistant", translator_prompt: "Translator", translator_header: "Live Translator", customer_speaker: "Customer", staff_speaker: "Staff", hold_to_speak: "Hold to Speak", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", 
                 welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", 
                 our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "View Pricing", 
                 pricing_title: "Our Pricing", pricing_subtitle: "Simple and transparent pricing for our companionship services.", 
@@ -423,7 +420,7 @@
                 chat_header: "AI Assistant", error_speak_again: "An error occurred. Please speak into the mic again." 
             },
             'ja': { 
-                ai_prompt: "長押しして話す",  translator_prompt: "長押しして翻訳", translator_header: "ライブ翻訳", customer_speaker: "お客様", staff_speaker: "スタッフ", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", 
+                ai_prompt: "AIアシスタント",  translator_prompt: "翻訳者", translator_header: "ライブ翻訳", customer_speaker: "お客様", staff_speaker: "スタッフ", hold_to_speak: "長押しして話す", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", 
                 welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", 
                 our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "料金を見る", 
                 pricing_title: "料金プラン", pricing_subtitle: "明確でシンプルなコンパニオンサービスの料金プランです。",
@@ -439,7 +436,7 @@
                 chat_header: "AIアシスタント", error_speak_again: "エラーが発生しました。もう一度マイクに向かってお話しください。" 
             },
             'zh': { 
-                ai_prompt: "按住说话", translator_prompt: "按住翻译", translator_header: "实时翻译", customer_speaker: "顾客", staff_speaker: "员工", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", 
+                ai_prompt: "AI助手", translator_prompt: "翻译员", translator_header: "实时翻译", customer_speaker: "顾客", staff_speaker: "员工", hold_to_speak: "按住说话", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", 
                 welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", 
                 our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "查看价格", 
                 pricing_title: "我们的价格", pricing_subtitle: "我们伴游服务的价格简单透明。",
@@ -455,7 +452,7 @@
                 chat_header: "AI助手", error_speak_again: "发生错误，请再对麦克风说一次。" 
             },
             'ko': { 
-                ai_prompt: "길게 눌러 말하기", translator_prompt: "길게 눌러 번역", translator_header: "실시간 번역기", customer_speaker: "고객", staff_speaker: "직원", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", 
+                ai_prompt: "AI 어시스턴트", translator_prompt: "번역가", translator_header: "실시간 번역기", customer_speaker: "고객", staff_speaker: "직원", hold_to_speak: "길게 눌러 말하기", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", 
                 welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", 
                 our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "가격 보기", 
                 pricing_title: "요금 안내", pricing_subtitle: "간단하고 투명한 저희 동반 서비스 요금입니다。",
@@ -471,7 +468,7 @@
                 chat_header: "AI 어시스턴트", error_speak_again: "오류가 발생했습니다. 마이크에 다시 말씀해주세요。" 
             },
             'es': { 
-                ai_prompt: "Mantén presionado para hablar", translator_prompt: "Mantén presionado para traducir", translator_header: "Traductor en Vivo", customer_speaker: "Cliente", staff_speaker: "Personal", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", 
+                ai_prompt: "Asistente de IA", translator_prompt: "Traductor", translator_header: "Traductor en Vivo", customer_speaker: "Cliente", staff_speaker: "Personal", hold_to_speak: "Mantén presionado para hablar", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", 
                 welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", 
                 our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Ver Precios", 
                 pricing_title: "Nuestros Precios", pricing_subtitle: "Precios simples y transparentes para nuestros servicios de acompañamiento.",
@@ -487,7 +484,7 @@
                 chat_header: "Asistente de IA", error_speak_again: "Ocurrió un error. Por favor, hable de nuevo al micrófono." 
             },
             'zh-tw': { 
-                ai_prompt: "按住說話", translator_prompt: "按住翻譯", translator_header: "即時翻譯", customer_speaker: "顧客", staff_speaker: "員工", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", 
+                ai_prompt: "AI助理", translator_prompt: "翻譯員", translator_header: "即時翻譯", customer_speaker: "顧客", staff_speaker: "員工", hold_to_speak: "按住說話", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", 
                 welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", 
                 our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "查看價格", 
                 pricing_title: "我們的價格", pricing_subtitle: "我們伴遊服務的價格簡單透明。",
@@ -512,8 +509,8 @@
         const translationConversationPanel = document.getElementById('translation-panel');
         const bigMicBtn = document.getElementById('big-mic');
         const translateBtn = document.getElementById('translate-btn');
-        const voiceOverlay = document.getElementById('voice-overlay');
-        const stopRecordingBtn = document.getElementById('stop-recording-btn');
+        const aiMicBtn = document.getElementById('ai-mic-btn');
+        const translationMicBtn = document.getElementById('translation-mic-btn');
         let audioContext, analyser, dataArray, source, rafId;
 
         function updateText() { 
@@ -652,6 +649,8 @@
                 e.preventDefault();
                 pos3 = e.clientX;
                 pos4 = e.clientY;
+                panel.style.right = 'auto'; 
+                panel.style.bottom = 'auto';
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
                 panel.classList.add('dragging');
@@ -663,8 +662,6 @@
                 pos2 = pos4 - e.clientY;
                 pos3 = e.clientX;
                 pos4 = e.clientY;
-                panel.style.bottom = 'auto';
-                panel.style.right = 'auto';
                 panel.style.top = (panel.offsetTop - pos2) + "px";
                 panel.style.left = (panel.offsetLeft - pos1) + "px";
             }
@@ -678,9 +675,15 @@
         
         // --- CONVERSATION & VOICE ---
         function closeAllPanels() {
-            aiConversationPanel.style.display = 'none';
-            translationConversationPanel.style.display = 'none';
+            [aiConversationPanel, translationConversationPanel].forEach(panel => {
+                panel.style.display = 'none';
+                panel.style.top = '';
+                panel.style.left = '';
+                panel.style.right = '';
+                panel.style.bottom = '';
+            });
         }
+
         function addChatMessage(message, sender, panel) { const msgDiv = document.createElement('div'); msgDiv.className = `chat-message ${sender}-message`; msgDiv.textContent = message; panel.appendChild(msgDiv); panel.scrollTop = panel.scrollHeight; return msgDiv; }
         function addTypingIndicator(panel) { const wrap = document.createElement('div'); wrap.className = 'typing'; wrap.innerHTML = `<span>.</span><span>.</span><span>.</span>`; panel.appendChild(wrap); panel.scrollTop = panel.scrollHeight; return wrap; }
         
@@ -732,42 +735,19 @@
                 addChatMessage("Translation failed.", "ai", translationChatMessages);
             }
         }
-
-        function visualize(stream) {
-            if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            audioContext.resume();
-            const visualizer = document.getElementById('voice-visualizer');
-            source = audioContext.createMediaStreamSource(stream);
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            const bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-            source.connect(analyser);
-            const draw = () => {
-                rafId = requestAnimationFrame(draw);
-                if (!analyser) return;
-                analyser.getByteFrequencyData(dataArray);
-                const avg = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
-                visualizer.style.transform = `scale(${1 + (avg / 128)})`;
-            };
-            draw();
-        }
+        
         async function startRecording() {
             if (isRecording) return;
-            
-            closeAllPanels();
-            const panel = document.getElementById(currentChatMode === 'ai' ? 'conversation-panel' : 'translation-panel');
-            panel.style.display = 'flex';
-            
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                voiceOverlay.style.display = 'flex';
-                visualize(stream);
                 audioChunks = [];
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
                 isRecording = true;
-                document.getElementById(currentChatMode === 'ai' ? 'big-mic' : 'translate-btn').classList.add('recording');
+
+                const activeBtn = document.getElementById(currentChatMode === 'ai' ? 'ai-mic-btn' : 'translation-mic-btn');
+                if (activeBtn) activeBtn.classList.add('recording');
+
                 mediaRecorder.addEventListener("dataavailable", (event) => { if (event.data?.size) audioChunks.push(event.data); });
                 mediaRecorder.addEventListener("stop", () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -780,24 +760,25 @@
                 });
             } catch (err) { alert("Microphone access is required. Please allow access and try again."); }
         }
+
         function stopRecording() {
             if (!isRecording) return;
             if (mediaRecorder?.state === "recording") mediaRecorder.stop();
             isRecording = false;
             
-            voiceOverlay.style.display = 'none';
-            document.getElementById('big-mic').classList.remove('recording');
-            document.getElementById('translate-btn').classList.remove('recording');
-
-
-            if (rafId) cancelAnimationFrame(rafId);
-            rafId = null;
-            if (source) source.disconnect();
-            
-            const visualizer = document.getElementById('voice-visualizer');
-            if(visualizer) visualizer.style.transform = 'scale(1)';
+            aiMicBtn.classList.remove('recording');
+            translationMicBtn.classList.remove('recording');
         }
-        
+
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+            const isVisible = panel.style.display === 'flex';
+            closeAllPanels();
+            if (!isVisible) {
+                panel.style.display = 'flex';
+            }
+        }
+
         // --- INITIALIZATION ---
         function createBubbles() {
             const container = document.querySelector('.bubbles-container');
@@ -864,21 +845,16 @@
                 showPage('page-first-time'); 
             });
 
-            // AI Button Events
-            bigMicBtn.addEventListener('mousedown', () => { currentChatMode = 'ai'; startRecording(); });
-            bigMicBtn.addEventListener('touchstart', (e) => { e.preventDefault(); currentChatMode = 'ai'; startRecording(); });
-            bigMicBtn.addEventListener('mouseup', stopRecording);
-            bigMicBtn.addEventListener('touchend', stopRecording);
-            bigMicBtn.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
-            
-            // Translator Button Events
-            translateBtn.addEventListener('mousedown', () => { currentChatMode = 'translation'; startRecording(); });
-            translateBtn.addEventListener('touchstart', (e) => { e.preventDefault(); currentChatMode = 'translation'; startRecording(); });
-            translateBtn.addEventListener('mouseup', stopRecording);
-            translateBtn.addEventListener('touchend', stopRecording);
-            translateBtn.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
-            
-            stopRecordingBtn.addEventListener('click', stopRecording);
+            bigMicBtn.addEventListener('click', () => { currentChatMode = 'ai'; togglePanel('conversation-panel'); });
+            translateBtn.addEventListener('click', () => { currentChatMode = 'translation'; togglePanel('translation-panel'); });
+
+            [aiMicBtn, translationMicBtn].forEach(btn => {
+                btn.addEventListener('mousedown', startRecording);
+                btn.addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); });
+                btn.addEventListener('mouseup', stopRecording);
+                btn.addEventListener('touchend', stopRecording);
+                btn.addEventListener('mouseleave', () => { if (isRecording) stopRecording(); });
+            });
 
             document.getElementById('speaker-customer').addEventListener('click', () => {
                 currentSpeaker = 'customer';
