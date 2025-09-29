@@ -146,6 +146,30 @@
             border-radius: 0.9rem; font-weight: 600;
             transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
             cursor: pointer; border: 1px solid transparent; text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn > * {
+            position: relative;
+            z-index: 2;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            animation: shine-sweep 4s infinite;
+        }
+
+        @keyframes shine-sweep {
+            100% {
+                left: 150%;
+            }
         }
         .btn-primary { background-color: var(--pink); color: white; }
         .btn-primary:hover:not(:disabled) {
@@ -368,6 +392,7 @@
         <div id="page-which-girl" class="page-content"><div class="card"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="welcome_back">Welcome Back!</h1><h2 class="page-title" data-translate-key="which_girl_title">Do you remember your companion's name?</h2><form id="girl-nomination-form" class="max-w-md mx-auto"><div class="flex flex-col space-y-4"><input type="text" name="girl_name" data-translate-key="girl_name_placeholder" class="w-full p-4 bg-white border border-pink-200 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-lg"><button type="submit" class="btn btn-primary text-lg" data-translate-key="submit_continue_btn">Submit & Continue</button><button type="button" id="not-sure-btn" class="btn btn-secondary text-lg" data-translate-key="not_sure_btn">I'm Not Sure</button></div></form></div></div>
         <div id="page-disclaimer-no" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><svg class="mx-auto h-16 w-16 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg><h3 class="text-2xl font-bold text-gray-800 mt-4" data-translate-key="legal_reminder_title_serious">【Important】Disclaimer & Terms of Use</h3><div class="mt-4 text-left space-y-3 text-gray-600 text-base" data-translate-key="legal_reminder_text_serious"></div><p class="mt-6 text-gray-800 font-semibold" data-translate-key="legal_reminder_agreement"></p><div class="flex justify-center gap-4 mt-6"><button onclick="redirectToBooking()" class="btn btn-primary w-2/5 text-lg" data-translate-key="confirm_btn">Agree</button><button onclick="handleRejection()" class="btn btn-secondary w-2/5 text-lg" data-translate-key="reject_btn">Decline</button></div></div></div>
         <div id="page-form-success" class="page-content"><div class="card text-center"><button onclick="goBack()" class="back-button">‹</button><h1 class="logo" data-translate-key="thank_you">Thank You!</h1><p class="text-xl mb-4" data-translate-key="form_success_text">Your preference has been noted.</p><p class="mb-6 text-lg" data-translate-key="form_success_subtitle">Please proceed to the disclaimer.</p><button onclick="showPage('page-disclaimer-no')" class="btn btn-primary text-lg" data-translate-key="continue_btn">Continue</button></div></div>
+        <div id="page-post-booking" class="page-content"><div class="card text-center"><h1 class="logo" data-translate-key="thank_you">Thank You</h1><p class="text-xl mb-8" data-translate-key="post_booking_text">Your booking page is open. You can use our tools here.</p><div class="flex flex-col items-center gap-6 max-w-sm mx-auto"><button id="post-booking-ai-btn" class="btn btn-primary w-full text-2xl py-6"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg><span data-translate-key="ai_prompt">AI Assistant</span></button><button id="post-booking-translator-btn" class="btn w-full text-2xl py-6" style="background-color: var(--violet); color: white;"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="m7 2 3 5"></path><path d="m10 14 3-3 5 5"></path><path d="m14 11 5 5"></path><path d="M11 22h8"></path></svg><span data-translate-key="translator_prompt">Translator</span></button></div><div class="flex justify-center gap-4 mt-8"><button onclick="goBack()" class="btn btn-secondary text-lg" data-translate-key="go_back_btn">Go Back</button><button onclick="startOver()" class="btn btn-secondary text-lg" data-translate-key="start_over_btn">Start Over</button></div></div></div>
     </div>
 
     <div id="conversation-panel" class="panel"><div id="ai-panel-header" class="panel-header"><span data-translate-key="chat_header">AI Assistant</span><button class="close-panel-btn" title="Close panel">&times;</button></div><div id="ai-chat-messages" class="chat-messages"></div><div class="p-4 border-t border-gray-200"><button id="ai-mic-btn" class="w-full btn btn-primary record-btn" data-translate-key="hold_to_speak">Speak</button></div></div>
@@ -421,6 +446,8 @@
         // --- TRANSLATION DATA ---
         const translations = {
             'en': { 
+                go_back_btn: "Go Back", start_over_btn: "Start Over",
+                post_booking_text: "Your booking page is open. You can use our tools here.",
                 ai_prompt: "AI Assistant", translator_prompt: "Translator", translator_header: "Live Translator", customer_speaker: "Customer", staff_speaker: "Staff", hold_to_speak: "Speak", search_placeholder: "Search for a language...", stop_btn: "Stop", select_language_title: "Select Your Language", 
                 welcome: "Welcome", first_time_title: "Is this your first time with us?", yes_btn: "Yes", no_btn: "No", 
                 our_services_title: "Our Services", our_services_subtitle: "We are a legally registered agency offering the following services:", ok_btn: "View Pricing", 
@@ -437,6 +464,8 @@
                 chat_header: "AI Assistant", error_speak_again: "An error occurred. Please speak into the mic again." 
             },
             'ja': { 
+                go_back_btn: "戻る", start_over_btn: "最初から",
+                post_booking_text: "予約ページが開きました。こちらでツールをご利用いただけます。",
                 ai_prompt: "AIアシスタント",  translator_prompt: "翻訳者", translator_header: "ライブ翻訳", customer_speaker: "お客様", staff_speaker: "スタッフ", hold_to_speak: "話す", search_placeholder: "言語を検索...", stop_btn: "停止", select_language_title: "言語を選択してください", 
                 welcome: "ようこそ", first_time_title: "当店のご利用は初めてですか？", yes_btn: "はい", no_btn: "いいえ", 
                 our_services_title: "私たちのサービス", our_services_subtitle: "当店は合法的に登録されたエージェンシーです。以下のサービスを提供しております：", ok_btn: "料金を見る", 
@@ -453,13 +482,15 @@
                 chat_header: "AIアシスタント", error_speak_again: "エラーが発生しました。もう一度マイクに向かってお話しください。" 
             },
             'zh': { 
+                go_back_btn: "返回", start_over_btn: "重新开始",
+                post_booking_text: "您的预订页面已打开。您可以在此处使用我们的工具。",
                 ai_prompt: "AI助手", translator_prompt: "翻译员", translator_header: "实时翻译", customer_speaker: "顾客", staff_speaker: "员工", hold_to_speak: "说话", search_placeholder: "搜索语言...", stop_btn: "停止", select_language_title: "请选择您的语言", 
                 welcome: "欢迎", first_time_title: "这是您第一次光临吗？", yes_btn: "是", no_btn: "否", 
                 our_services_title: "我们的服务", our_services_subtitle: "我们是合法注册的机构，提供以下服务：", ok_btn: "查看价格", 
                 pricing_title: "我们的价格", pricing_subtitle: "我们伴游服务的价格简单透明。",
                 duration_60: "60分钟", duration_90: "90分钟", duration_120: "120分钟",
                 legal_reminder_title_serious: "【重要】免責声明与使用条款", 
-                legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根据日本法律，严禁为性交支付任何形式的报酬。本机构完全遵守所有法规。</p><p><strong>2. 客户合作：</strong>我们要求客户合作以维护法律。请不要要求在日本非法的服务。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_text_serious: "<p><strong>1. 遵守法律：</strong>根据日本法律，严禁为性交支付任何形式的报酬。本机构完全遵守所有法规。</p><p><strong>2. 客户合作：</strong>我们要求客户合作以维护法律。请不要要求在日本非法的服务。</p><p><strong>3. 服务性质：</strong>所有费用仅用于我们伴侣的时间和愉快陪伴。同意这一点，即表示您确认您支付的费用并非用于任何非法行为。</p>",
                 legal_reminder_agreement: "点击“同意”，即表示您确认已阅读并理解这些条款。", 
                 confirm_btn: "同意", reject_btn: "拒绝", thank_you: "谢谢", rejection_text: "感谢您的关注。我们期待能再次为您服务。正在重定向...", 
                 welcome_back: "欢迎回来！", which_girl_title: "请问您有指定的女伴吗？", girl_name_placeholder: "请输入同伴的名字", 
@@ -469,13 +500,15 @@
                 chat_header: "AI助手", error_speak_again: "发生错误，请再对麦克风说一次。" 
             },
             'ko': { 
+                go_back_btn: "뒤로가기", start_over_btn: "처음부터",
+                post_booking_text: "예약 페이지가 열렸습니다. 여기에서 도구를 사용할 수 있습니다.",
                 ai_prompt: "AI 어시스턴트", translator_prompt: "번역가", translator_header: "실시간 번역기", customer_speaker: "고객", staff_speaker: "직원", hold_to_speak: "말하기", search_placeholder: "언어 검색...", stop_btn: "중지", select_language_title: "언어를 선택하세요", 
                 welcome: "환영합니다", first_time_title: "저희는 처음 방문하시나요?", yes_btn: "예", no_btn: "아니요", 
                 our_services_title: "우리의 서비스", our_services_subtitle: "저희는 합법적으로 등록된 업체이며, 다음 서비스를 제공합니다:", ok_btn: "가격 보기", 
                 pricing_title: "요금 안내", pricing_subtitle: "간단하고 투명한 저희 동반 서비스 요금입니다。",
                 duration_60: "60분", duration_90: "90분", duration_120: "120분",
                 legal_reminder_title_serious: "【중요】면책 조항 및 이용 약관", 
-                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. サービス内容について：</strong>すべての料金は、コンパニオンとの楽しい時間と会話に対して発生するものです。これに同意することで、お客様は違法行為に対する対価を支払うものではないことを確認したものとみなされます。</p>", 
+                legal_reminder_text_serious: "<p><strong>1. 법률 준수:</strong> 일본 법률에 따라 성교에 대한 어떠한 형태의 지불도 엄격히 금지됩니다. 저희는 모든 규정을 완전히 준수합니다。</p><p><strong>2. 고객 협조:</strong> 법률을 준수하기 위해 고객의 협조가 필요합니다. 일본에서 불법적인 서비스를 요청하지 마십시오。</p><p><strong>3. 서비스의 성격:</strong> 모든 요금은 동반자와의 즐거운 시간과 교제를 위한 것입니다. 이에 동의함으로써 귀하는 불법 행위에 대한 비용을 지불하는 것이 아님을 확인하는 것입니다。</p>",
                 legal_reminder_agreement: "'동의'를 클릭하시면 본 약관을 읽고 이해했음을 확인하는 것입니다。", 
                 confirm_btn: "동의", reject_btn: "거절", thank_you: "감사합니다", rejection_text: "관심 가져주셔서 감사합니다. 다음에 다시 뵙기를 바랍니다. 리디렉션 중...", 
                 welcome_back: "다시 찾아주셔서 감사합니다!", which_girl_title: "지명하고 싶은 동반자가 있으신가요?", girl_name_placeholder: "동반자 이름을 입력하세요", 
@@ -485,13 +518,15 @@
                 chat_header: "AI 어시스턴트", error_speak_again: "오류가 발생했습니다. 마이크에 다시 말씀해주세요。" 
             },
             'es': { 
+                go_back_btn: "Volver", start_over_btn: "Empezar de Nuevo",
+                post_booking_text: "Su página de reserva está abierta. Puede utilizar nuestras herramientas aquí.",
                 ai_prompt: "Asistente de IA", translator_prompt: "Traductor", translator_header: "Traductor en Vivo", customer_speaker: "Cliente", staff_speaker: "Personal", hold_to_speak: "Hablar", search_placeholder: "Buscar un idioma...", stop_btn: "Parar", select_language_title: "Seleccione su idioma", 
                 welcome: "Bienvenido", first_time_title: "¿Es la primera vez que nos visita?", yes_btn: "Sí", no_btn: "No", 
                 our_services_title: "Nuestros Servicios", our_services_subtitle: "Somos una agencia legalmente registrada. Ofrecemos los siguientes servicios:", ok_btn: "Ver Precios", 
                 pricing_title: "Nuestros Precios", pricing_subtitle: "Precios simples y transparentes para nuestros servicios de acompañamiento.",
                 duration_60: "60 Minutos", duration_90: "90 Minutos", duration_120: "120 Minutos",
                 legal_reminder_title_serious: "【Importante】Descargo de Responsabilidad y Términos de Uso", 
-                legal_reminder_text_serious: "<p><strong>1. Cumplimiento Legal:</strong> De acuerdo con la ley japonesa, cualquier forma de pago por relaciones sexuales está strictly prohibited. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del Cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. Por favor, no solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del Servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al continuar, usted reconoce que no está pagando por ningún acto ilegal.</p>", 
+                legal_reminder_text_serious: "<p><strong>1. Cumplimiento Legal:</strong> De acuerdo con la ley japonesa, cualquier forma de pago por relaciones sexuales está prohibido. Nuestra agencia cumple plenamente con todas las regulaciones.</p><p><strong>2. Cooperación del Cliente:</strong> Requerimos la cooperación de nuestros clientes para cumplir la ley. Por favor, no solicite servicios que sean ilegales en Japón.</p><p><strong>3. Naturaleza del Servicio:</strong> Todas las tarifas son únicamente por el tiempo y la agradable compañía de nuestra acompañante. Al continuar, usted reconoce que no está pagando por ningún acto ilegal.</p>", 
                 legal_reminder_agreement: "Al hacer clic en 'Aceptar', confirma que ha leído y entendido estos términos.", 
                 confirm_btn: "Aceptar", reject_btn: "Rechazar", thank_you: "Gracias", rejection_text: "Agradecemos su interés y esperamos verle en el futuro. Redirigiendo...", 
                 welcome_back: "¡Bienvenido de nuevo!", which_girl_title: "¿Tiene alguna acompañante en mente?", girl_name_placeholder: "Ingrese el nombre de la acompañante", 
@@ -501,6 +536,8 @@
                 chat_header: "Asistente de IA", error_speak_again: "Ocurrió un error. Por favor, hable de nuevo al micrófono." 
             },
             'zh-tw': { 
+                go_back_btn: "返回", start_over_btn: "重新開始",
+                post_booking_text: "您的預訂頁面已打開。您可以在此處使用我們的工具。",
                 ai_prompt: "AI助理", translator_prompt: "翻譯員", translator_header: "即時翻譯", customer_speaker: "顧客", staff_speaker: "員工", hold_to_speak: "說話", search_placeholder: "搜尋語言...", stop_btn: "停止", select_language_title: "請選擇您的語言", 
                 welcome: "歡迎", first_time_title: "這是您第一次光臨嗎？", yes_btn: "是", no_btn: "否", 
                 our_services_title: "我們的服務", our_services_subtitle: "我們是合法註冊的機構，提供以下服務：", ok_btn: "查看價格", 
@@ -537,25 +574,26 @@
                 if (langPack[key]) {
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                         el.placeholder = langPack[key];
-                        return; // continue to next element in forEach
+                        return; 
+                    }
+                    
+                    if (key === 'legal_reminder_text_serious') {
+                        el.innerHTML = langPack[key];
+                        return;
                     }
 
-                    // For all other elements, manage text and icons separately
                     const arrowKeys = ['continue_btn', 'ok_btn', 'confirm_btn', 'submit_continue_btn'];
                     const needsArrow = el.tagName === 'BUTTON' && arrowKeys.includes(key);
 
-                    // Clear existing text nodes to prevent duplication
                     Array.from(el.childNodes).forEach(child => {
-                        if (child.nodeType === 3) { // It's a text node
+                        if (child.nodeType === 3) { 
                             el.removeChild(child);
                         }
                     });
 
-                    // Add new text node at the beginning
                     const newText = langPack[key] + (needsArrow ? ' ' : '');
                     el.prepend(document.createTextNode(newText));
 
-                    // Add arrow if needed and if it doesn't exist
                     if (needsArrow && !el.querySelector('.btn-icon')) {
                         el.insertAdjacentHTML('beforeend', '<span class="btn-icon ml-2">&rarr;</span>');
                     }
@@ -624,15 +662,19 @@
                 targetPage.classList.add('active'); 
                 updateText(); 
             }
+            const hideVoiceControls = pageId === 'page-language' || pageId === 'page-post-booking';
             document.querySelectorAll('.voice-control-container').forEach(el => {
-                if (pageId !== 'page-language') {
-                    el.style.display = 'flex';
-                } else {
-                    el.style.display = 'none';
-                }
+                 el.style.display = hideVoiceControls ? 'none' : 'flex';
             });
         }
+
+        function startOver() {
+            pageHistory = [];
+            showPage('page-language');
+        }
+
         function goBack() { if (pageHistory.length > 0) { const prevPageId = pageHistory.pop(); showPage(prevPageId, true); } }
+        
         function redirectToBooking() {
             let bookingUrl = 'https://tokyogirlshub.com/en/schedule'; // Default URL
             switch (currentLanguage) {
@@ -646,8 +688,10 @@
                     bookingUrl = 'https://tokyogirlshub.com/zh-TW/schedule';
                     break;
             }
-            window.location.href = bookingUrl;
+            window.open(bookingUrl, '_blank');
+            showPage('page-post-booking');
         }
+
         function handleRejection() { showPage('page-rejected'); setTimeout(() => { pageHistory = []; showPage('page-language'); }, 6000); }
         async function readResponseSafely(response) { const ct = response.headers.get('content-type') || ''; try { if (ct.includes('application/json')) return await response.json(); const text = await response.text(); return JSON.parse(text); } catch (_) { return { ok: response.ok, status: response.status }; } }
         
@@ -915,6 +959,9 @@
 
             bigMicBtn.addEventListener('click', () => { currentChatMode = 'ai'; togglePanel('conversation-panel'); });
             translateBtn.addEventListener('click', () => { currentChatMode = 'translation'; togglePanel('translation-panel'); });
+            
+            document.getElementById('post-booking-ai-btn').addEventListener('click', () => togglePanel('conversation-panel'));
+            document.getElementById('post-booking-translator-btn').addEventListener('click', () => togglePanel('translation-panel'));
 
             [aiMicBtn, translationMicBtn].forEach(btn => {
                 btn.addEventListener('click', handleMicButtonClick);
