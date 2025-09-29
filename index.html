@@ -161,12 +161,18 @@
             left: -150%;
             width: 50%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%);
             transform: skewX(-25deg);
-            animation: shine-sweep 4s infinite;
+            animation: shine-sweep 7s ease-in-out infinite;
         }
 
         @keyframes shine-sweep {
+             0% {
+                left: -150%;
+            }
+            40% {
+                left: 150%;
+            }
             100% {
                 left: 150%;
             }
@@ -425,7 +431,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const n8nWebhookUrl = 'https://tokyogirlshub.app.n8n.cloud/webhook/d01e21eb-14c0-41bf-8c7f-cee5a5e3371d';
+        const n8nWebhookUrl = 'https://tokyogirlshub.app.n8n.cloud/webhook/d01e21eb-14c_0-41bf-8c7f-cee5a5e3371d';
         let currentLanguage = 'en';
         let pageHistory = [];
         let chatHistory = [];
@@ -458,7 +464,7 @@
                 legal_reminder_agreement: "By clicking 'Agree', you confirm that you have read and understood these terms.", 
                 confirm_btn: "Agree", reject_btn: "Decline", thank_you: "Thank You", rejection_text: "We appreciate your interest and hope to see you in the future. Redirecting...", 
                 welcome_back: "Welcome Back!", which_girl_title: "Do you remember your companion's name?", girl_name_placeholder: "Enter companion's name here", 
-                not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we've received your preference.", 
+                not_sure_btn: "I'm Not Sure", submit_continue_btn: "Submit & Continue", form_success_text: "Thank you, we'vereceived your preference.", 
                 form_success_subtitle: "Please proceed to the legal notice.", continue_btn: "Continue", 
                 services: ["Kissing", "Handjob", "Ball Licking", "Blowjob", "Touching", "Body Licking", "69", "Oral", "Cuddling", "Add-Ons (extra charge)"], 
                 chat_header: "AI Assistant", error_speak_again: "An error occurred. Please speak into the mic again." 
